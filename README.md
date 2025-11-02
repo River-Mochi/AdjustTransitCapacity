@@ -2,7 +2,7 @@
 
 **Depot Capacity Redux**
 - Lets players scale how many vehicles each transport depot can maintain or spawn in *Cities: Skylines II*
-— plus how many passengers each vehicle can carry.
+— plus how many passengers each public transic vehicle can carry.
 
 ---
 
