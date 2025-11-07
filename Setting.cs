@@ -1,7 +1,7 @@
 // Setting.cs
-// Purpose: options UI + saved settings for Depot Capacity Redux.
+// Purpose: options UI + saved settings for Adjust Transit Capacity.
 
-namespace DepotCapacityRedux
+namespace AdjustTransitCapacity
 {
     using System.Collections.Generic;
     using Colossal;
@@ -12,7 +12,7 @@ namespace DepotCapacityRedux
     using Unity.Entities;
 
     // keep custom location folder
-    [FileLocation("ModsSettings/DepotCapacityRedux/DepotCapacityRedux")]
+    [FileLocation("ModsSettings/AdjustTransitCapacity/AdjustTransitCapacity")]
     [SettingsUIGroupOrder(DepotGroup, PassengerGroup)]
     [SettingsUIShowGroupName(DepotGroup, PassengerGroup)]
     public sealed class Setting : ModSetting
@@ -67,8 +67,8 @@ namespace DepotCapacityRedux
                 return;
             }
 
-            DepotCapacityReduxSystem system =
-                world.GetExistingSystemManaged<DepotCapacityReduxSystem>();
+            AdjustTransitCapacitySystem system =
+                world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
             if (system != null)
             {
                 system.Enabled = true;
@@ -201,7 +201,7 @@ namespace DepotCapacityRedux
         {
             return new Dictionary<string, string>
             {
-                { m_Setting.GetSettingsLocaleID(), "Depot Capacity Redux" },
+                { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Main" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Depot capacity (max vehicles per depot)" },
@@ -270,7 +270,7 @@ namespace DepotCapacityRedux
         {
             return new Dictionary<string, string>
             {
-                { m_Setting.GetSettingsLocaleID(), "Depot Capacity Redux" },
+                { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Principal" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Capacité du dépôt" },
@@ -315,7 +315,7 @@ namespace DepotCapacityRedux
         {
             return new Dictionary<string, string>
             {
-                { m_Setting.GetSettingsLocaleID(), "Depot Capacity Redux" },
+                { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Principal" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Capacidad del depósito" },
@@ -360,7 +360,7 @@ namespace DepotCapacityRedux
         {
             return new Dictionary<string, string>
             {
-                { m_Setting.GetSettingsLocaleID(), "Depot Capacity Redux" },
+                { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Hauptmenü" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Depotkapazität" },

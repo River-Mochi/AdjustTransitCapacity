@@ -1,7 +1,7 @@
 // Mod.cs
-// Entrypoint for Depot Capacity Redux; registers settings, locales, and the ECS system.
+// Entrypoint for Adjust Transit Capacity; registers settings, locales, and the ECS system.
 
-namespace DepotCapacityRedux
+namespace AdjustTransitCapacity
 {
     using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
@@ -12,10 +12,10 @@ namespace DepotCapacityRedux
 
     public sealed class Mod : IMod
     {
-        public const string ModName = "Depot Capacity Redux";
-        public const string ModId = "DepotCapacityRedux";
-        public const string ModTag = "[DCR]";
-        public const string ModVersion = "1.2.2";
+        public const string ModName = "Adjust Transit Capacity";
+        public const string ModId = "AdjustTransitCapacity";
+        public const string ModTag = "[ATC]";
+        public const string ModVersion = "1.2.3";
 
         public static readonly ILog Log =
             LogManager.GetLogger(ModId).SetShowsErrorsInUI(false);
@@ -52,13 +52,13 @@ namespace DepotCapacityRedux
             setting.RegisterInOptionsUI();
 
             // 5) make sure ECS system runs after prefab data is ready
-            updateSystem.UpdateAfter<DepotCapacityReduxSystem>(SystemUpdatePhase.PrefabUpdate);
+            updateSystem.UpdateAfter<AdjustTransitCapacitySystem>(SystemUpdatePhase.PrefabUpdate);
 
             // 6) if a world is already running, apply once right now
             World world = World.DefaultGameObjectInjectionWorld;
             if (world != null)
             {
-                DepotCapacityReduxSystem system = world.GetExistingSystemManaged<DepotCapacityReduxSystem>();
+                AdjustTransitCapacitySystem system = world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
                 if (system != null)
                 {
                     system.Enabled = true;
