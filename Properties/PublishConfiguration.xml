@@ -47,13 +47,13 @@
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/adjust-transit-capacity-redux.1866178/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.2.4" />
+	<ModVersion Value="1.2.5" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.3.6*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!-- Change log for new version. Single line or multi line. Supports minimal markdown subset -->
-	<ChangeLog>* fix: stop capacity stacking on reload </ChangeLog>
+	<ChangeLog>* fix: last percent method for capacity fix, and refactor split off locales</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
 <ExternalLink Type="github" Url="https://github.com/River-Mochi/AdjustTransitCapacity" />
