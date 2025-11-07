@@ -26,11 +26,11 @@ namespace AdjustTransitCapacity
         {
             Log.Info($"{ModName} v{ModVersion} OnLoad");
 
-            // 1) create settings
+            // ---- SETTINGS ----
             Setting setting = new Setting(this);
             Settings = setting;
 
-            // 2) register locales
+            // ---- LOCALES ----
             var lm = GameManager.instance?.localizationManager;
             if (lm != null)
             {
@@ -45,20 +45,21 @@ namespace AdjustTransitCapacity
                 Log.Warn("LocalizationManager not found; settings UI texts may be missing.");
             }
 
-            // 3) load saved settings from fixed path
+            // ---- LOAD SETTINGS FROM DISK ----
             AssetDatabase.global.LoadSettings(ModId, setting, new Setting(this));
 
-            // 4) show in Options
+            // ---- REGISTER IN OPTIONS UI ----
             setting.RegisterInOptionsUI();
 
-            // 5) make sure ECS system runs after prefab data is ready
+            // ---- ECS SYSTEM SCHEDULING ----
             updateSystem.UpdateAfter<AdjustTransitCapacitySystem>(SystemUpdatePhase.PrefabUpdate);
 
-            // 6) if a world is already running, apply once right now
+            // ---- APPLY ON ALREADY-RUNNING WORLD ----
             World world = World.DefaultGameObjectInjectionWorld;
             if (world != null)
             {
-                AdjustTransitCapacitySystem system = world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
+                AdjustTransitCapacitySystem system =
+                    world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
                 if (system != null)
                 {
                     system.Enabled = true;

@@ -1,6 +1,3 @@
-// Setting.cs
-// Purpose: options UI + saved settings for Adjust Transit Capacity.
-
 namespace AdjustTransitCapacity
 {
     using System.Collections.Generic;
@@ -11,42 +8,45 @@ namespace AdjustTransitCapacity
     using Game.UI;
     using Unity.Entities;
 
-    // keep custom location folder
+    // Keep custom location folder under ModsSettings
     [FileLocation("ModsSettings/AdjustTransitCapacity/AdjustTransitCapacity")]
     [SettingsUIGroupOrder(DepotGroup, PassengerGroup)]
     [SettingsUIShowGroupName(DepotGroup, PassengerGroup)]
     public sealed class Setting : ModSetting
     {
-        // tabs + groups
+        // ---- TABS & GROUPS ----
         public const string MainTab = "Main";
         public const string DepotGroup = "DepotCapacity";
         public const string PassengerGroup = "PassengerCapacity";
 
-        // shared slider ranges
-        public const int MinPercent = 100;   // 1x
-        public const int MaxPercent = 1000;  // 10x
+        // ---- SHARED SLIDER RANGE ----
+        // 100% = 1x vanilla, 1000% = 10x
+        public const int MinPercent = 100;
+        public const int MaxPercent = 1000;
         public const int StepPercent = 25;
 
+        // ---- CTOR ----
         public Setting(IMod mod)
             : base(mod)
         {
-            // brand-new settings file → populate
+            // Brand-new settings file → populate defaults
             if (BusDepotPercent == 0)
             {
                 SetDefaults();
             }
         }
 
+        // ---- DEFAULT VALUES ----
         public override void SetDefaults()
         {
-            // 5 DEPOTS 
+            // Depots (5 original types)
             BusDepotPercent = 100;
             TaxiDepotPercent = 100;
             TramDepotPercent = 100;
             TrainDepotPercent = 100;
             SubwayDepotPercent = 100;
 
-            // PASSENGERS (taxis stay vanilla 4 seats in game)
+            // Passengers (taxis stay vanilla 4 seats in game)
             BusPassengerPercent = 100;
             TramPassengerPercent = 100;
             TrainPassengerPercent = 100;
@@ -56,11 +56,12 @@ namespace AdjustTransitCapacity
             AirplanePassengerPercent = 100;
         }
 
+        // ---- APPLY CALLBACK ----
         public override void Apply()
         {
             base.Apply();
 
-            // tell the system to reapply multipliers once
+            // Tell the system to reapply multipliers once
             World world = World.DefaultGameObjectInjectionWorld;
             if (world == null)
             {
@@ -75,10 +76,8 @@ namespace AdjustTransitCapacity
             }
         }
 
-        //
-        // DEPOT CAPACITY (max vehicles per depot building)
+        // ---- DEPOT CAPACITY (max vehicles per depot building) ----
         // 100% = vanilla, 1000% = 10x
-        //
 
         [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(MainTab, DepotGroup)]
@@ -120,10 +119,8 @@ namespace AdjustTransitCapacity
             set;
         }
 
-        //
-        // PASSENGER CAPACITY (max passengers per vehicle)
-        // taxi passenger removed (CS2 keeps 4 seats)
-        //
+        // ---- PASSENGER CAPACITY (max passengers per vehicle) ----
+        // Taxi passenger capacity is not changed (CS2 keeps 4 seats).
 
         [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(MainTab, PassengerGroup)]
@@ -157,7 +154,7 @@ namespace AdjustTransitCapacity
             set;
         }
 
-        // passenger-only types (not depots)
+        // Passenger-only types (not depots)
         [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(MainTab, PassengerGroup)]
         public int ShipPassengerPercent
@@ -201,13 +198,14 @@ namespace AdjustTransitCapacity
         {
             return new Dictionary<string, string>
             {
+                // ---- MOD TITLE / TAB / GROUPS ----
                 { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Main" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Depot capacity (max vehicles per depot)" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup), "Passenger capacity (max riders per vehicle)" },
 
-                // Depot (5 only)
+                // ---- DEPOT LABELS & DESCRIPTIONS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotPercent)), "Bus depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotPercent)), "How many buses each bus depot can maintain/spawn. 100% = vanilla, 1000% = 10×." },
 
@@ -223,7 +221,7 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotPercent)), "Subway depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotPercent)), "How many subway vehicles each depot can maintain." },
 
-                // Passenger (no taxi)
+                // ---- PASSENGER LABELS & DESCRIPTIONS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerPercent)), "Bus passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerPercent)), "Multiplier for bus passenger seats. 100% = vanilla seats, 1000% = 10× seats." },
 
@@ -270,18 +268,21 @@ namespace AdjustTransitCapacity
         {
             return new Dictionary<string, string>
             {
+                // ---- MOD TITLE / TAB / GROUPS ----
                 { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Principal" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Capacité du dépôt" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup), "Capacité passagers" },
 
+                // ---- DEPOT LABELS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotPercent)), "Dépôts de bus" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotPercent)), "Dépôts de taxis" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotPercent)), "Dépôts de tram" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotPercent)), "Dépôts de trains" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotPercent)), "Dépôts de métro" },
 
+                // ---- PASSENGER LABELS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerPercent)), "Passagers – bus" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerPercent)), "Passagers – tram" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerPercent)), "Passagers – train" },
@@ -315,18 +316,21 @@ namespace AdjustTransitCapacity
         {
             return new Dictionary<string, string>
             {
+                // ---- MOD TITLE / TAB / GROUPS ----
                 { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Principal" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Capacidad del depósito" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup), "Capacidad de pasajeros" },
 
+                // ---- DEPOT LABELS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotPercent)), "Depósitos de autobuses" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotPercent)), "Depósitos de taxis" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotPercent)), "Depósitos de tranvías" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotPercent)), "Depósitos de trenes" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotPercent)), "Depósitos de metro" },
 
+                // ---- PASSENGER LABELS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerPercent)), "Pasajeros – autobús" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerPercent)), "Pasajeros – tranvía" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerPercent)), "Pasajeros – tren" },
@@ -360,18 +364,21 @@ namespace AdjustTransitCapacity
         {
             return new Dictionary<string, string>
             {
+                // ---- MOD TITLE / TAB / GROUPS ----
                 { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Hauptmenü" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Depotkapazität" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup), "Passagierkapazität" },
 
+                // ---- DEPOT LABELS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotPercent)), "Busdepots" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotPercent)), "Taxidepots" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotPercent)), "Straßenbahndepots" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotPercent)), "Zugdepots" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotPercent)), "U-Bahn-Depots" },
 
+                // ---- PASSENGER LABELS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerPercent)), "Fahrgäste – Bus" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerPercent)), "Fahrgäste – Straßenbahn" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerPercent)), "Fahrgäste – Zug" },
@@ -405,18 +412,21 @@ namespace AdjustTransitCapacity
         {
             return new Dictionary<string, string>
             {
-                { m_Setting.GetSettingsLocaleID(), "车库容量重制版" },
+                // ---- MOD TITLE / TAB / GROUPS ----
+                { m_Setting.GetSettingsLocaleID(), "公共交通容量调整" },
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "主要" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "车库容量" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup), "乘客数量" },
 
+                // ---- DEPOT LABELS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotPercent)), "公交车车库" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotPercent)), "出租车车库" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotPercent)), "有轨电车车库" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotPercent)), "火车车库" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotPercent)), "地铁车库" },
 
+                // ---- PASSENGER LABELS ----
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerPercent)), "公交车乘客" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerPercent)), "有轨电车乘客" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerPercent)), "火车乘客" },

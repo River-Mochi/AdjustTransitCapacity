@@ -1,7 +1,3 @@
-// AdjustTransitCapacitySystem.cs
-// Purpose: apply multipliers for Depot max vehicles and Passenger max riders
-//          based on current settings. Safe across city loads: caches are cleared
-
 namespace AdjustTransitCapacity
 {
     using System.Collections.Generic;
@@ -13,6 +9,7 @@ namespace AdjustTransitCapacity
 
     public sealed partial class AdjustTransitCapacitySystem : GameSystemBase
     {
+        // ---- CACHES ----
         // depot entity -> vanilla vehicle capacity
         private readonly Dictionary<Entity, int> m_OriginalDepotCapacity =
             new Dictionary<Entity, int>();
@@ -21,14 +18,16 @@ namespace AdjustTransitCapacity
         private readonly Dictionary<Entity, int> m_OriginalPassengerCapacity =
             new Dictionary<Entity, int>();
 
+        // ---- QUERIES ----
         private EntityQuery m_DepotQuery;
         private EntityQuery m_VehicleQuery;
 
+        // ---- LIFECYCLE: CREATE / DESTROY ----
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            // query all transport depots
+            // Query all transport depots (prefabs with TransportDepotData)
             m_DepotQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new[]
@@ -37,7 +36,7 @@ namespace AdjustTransitCapacity
                 }
             });
 
-            // query all public transport vehicles
+            // Query all public transport vehicles
             m_VehicleQuery = GetEntityQuery(new EntityQueryDesc
             {
                 All = new[]
@@ -49,8 +48,10 @@ namespace AdjustTransitCapacity
             RequireForUpdate(m_DepotQuery);
             RequireForUpdate(m_VehicleQuery);
 
-            // initial run (in case options were saved already)
-            Enabled = true;
+            // Important: do NOT enable here.
+            // Baselines must be captured AFTER the game load completes,
+            // so enabling is done in OnGameLoadingComplete and Setting.Apply().
+            Enabled = false;
         }
 
         /// <summary>
@@ -70,11 +71,11 @@ namespace AdjustTransitCapacity
                 return;
             }
 
-            // entities are rebuilt per city -> cached baselines are no longer valid
+            // Entities are rebuilt per city -> cached baselines are no longer valid.
             m_OriginalDepotCapacity.Clear();
             m_OriginalPassengerCapacity.Clear();
 
-            // re-apply to newly loaded city
+            // Re-apply to the newly loaded city (will capture fresh vanilla values).
             Enabled = true;
         }
 
@@ -85,6 +86,7 @@ namespace AdjustTransitCapacity
             base.OnDestroy();
         }
 
+        // ---- MAIN UPDATE ----
         protected override void OnUpdate()
         {
             if (Mod.Settings == null)
@@ -95,9 +97,7 @@ namespace AdjustTransitCapacity
 
             Setting settings = Mod.Settings;
 
-            //
-            // 1) DEPOTS 5 types (Bus/Taxi/Tram/Train/Subway)
-            //
+            // ---- DEPOTS (5 types: Bus / Taxi / Tram / Train / Subway) ----
             NativeArray<Entity> depots = m_DepotQuery.ToEntityArray(Allocator.Temp);
             try
             {
@@ -107,6 +107,7 @@ namespace AdjustTransitCapacity
                     TransportDepotData depotData =
                         EntityManager.GetComponentData<TransportDepotData>(depotEntity);
 
+                    // Capture vanilla capacity once per city.
                     if (!m_OriginalDepotCapacity.TryGetValue(depotEntity, out int baseCapacity))
                     {
                         baseCapacity = depotData.m_VehicleCapacity;
@@ -138,9 +139,7 @@ namespace AdjustTransitCapacity
                 depots.Dispose();
             }
 
-            //
-            // 2) PASSENGERS (no taxi capacity change)
-            //
+            // ---- PASSENGERS (no taxi capacity change) ----
             NativeArray<Entity> vehicles = m_VehicleQuery.ToEntityArray(Allocator.Temp);
             try
             {
@@ -181,18 +180,16 @@ namespace AdjustTransitCapacity
                 vehicles.Dispose();
             }
 
-            // run-once; either settings.Apply() or city load will enable again
+            // Run-once; either Setting.Apply() or city load will enable again.
             Enabled = false;
         }
 
-        //
-        // Helpers
-        //
+        // ---- HELPERS: DEPOT SCALAR ----
 
         /// <summary>
         /// Depot multipliers: 100%–1000%, internal scalar 1.0–10.0.
-        /// Any other depot type is left at vanilla (1.0)
-        /// targets 5 depot types
+        /// Any other depot type is left at vanilla (1.0).
+        /// Targets 5 depot types.
         /// </summary>
         private static float GetDepotScalar(Setting settings, TransportType type)
         {
@@ -218,6 +215,7 @@ namespace AdjustTransitCapacity
                     return 1f;
             }
 
+            // Clamp to 1x–10x for safety.
             if (scalar < 1f)
             {
                 scalar = 1f;
@@ -229,6 +227,8 @@ namespace AdjustTransitCapacity
 
             return scalar;
         }
+
+        // ---- HELPERS: PASSENGER SCALAR ----
 
         /// <summary>
         /// Passenger multipliers: 100%–1000% → 1.0–10.0.
@@ -261,7 +261,7 @@ namespace AdjustTransitCapacity
                     scalar = settings.AirplanePassengerPercent / 100f;
                     break;
                 default:
-                    // includes Taxi → leave at vanilla value
+                    // Includes Taxi → leave at vanilla value.
                     return 1f;
             }
 
