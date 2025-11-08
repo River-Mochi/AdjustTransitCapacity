@@ -124,7 +124,7 @@ namespace AdjustTransitCapacity
                     "When enabled, many extra debug details are sent to AdjustTransitCapacity.log.\n" +
                     "Useful for troubleshooting, but will spam the log.\n" +
                     "Recommend **Disable** for normal gameplay.\n" +
-                    "If you don't know what this is for, leave it disabled."
+                    "**If you don't know what this is for, leave it disabled.**"
                 },
             };
         }
