@@ -1,5 +1,5 @@
-// Setting.cs
-// Purpose: options UI + saved settings for Adjust Transit Capacity.
+// Settings/Setting.cs
+// Options UI + saved settings for Adjust Transit Capacity.
 
 namespace AdjustTransitCapacity
 {
@@ -11,7 +11,9 @@ namespace AdjustTransitCapacity
     using Unity.Entities;
     using UnityEngine;
 
-    // Keep custom location folder under ModsSettings
+    /// <summary>
+    /// ATC options: depot/passenger scalars, about info, links, and debug toggle.
+    /// </summary>
     [FileLocation("ModsSettings/AdjustTransitCapacity/AdjustTransitCapacity")]
     [SettingsUIGroupOrder(
         DepotGroup,
@@ -28,33 +30,32 @@ namespace AdjustTransitCapacity
     )]
     public sealed class Setting : ModSetting
     {
-        // ---- TABS ----
+        // Tabs
         public const string MainTab = "Main";
         public const string AboutTab = "About";
 
-        // ---- GROUPS (Main tab) ----
+        // Groups (Main tab)
         public const string DepotGroup = "DepotCapacity";
         public const string PassengerGroup = "PassengerCapacity";
 
-        // ---- GROUPS (About tab) ----
+        // Groups (About tab)
         public const string AboutInfoGroup = "AboutInfo";
         public const string AboutLinksGroup = "AboutLinks";
         public const string DebugGroup = "Debug";
 
-        // ---- SHARED SLIDER RANGE (1x–10x) ----
+        // Slider range (1x–10x)
         // All sliders represent a direct multiplier: 1.0 = vanilla, 10.0 = 10x.
         public const float MinScalar = 1f;
         public const float MaxScalar = 10f;
         public const float StepScalar = 0.1f;
 
-        // ---- External links ----
+        // External links
         private const string UrlParadox =
             "https://mods.paradoxplaza.com/uploaded?orderBy=desc&sortBy=best&time=alltime";
 
         private const string UrlDiscord =
             "https://discord.gg/HTav7ARPs2";
 
-        // ---- CTOR ----
         public Setting(IMod mod)
             : base(mod)
         {
@@ -65,7 +66,8 @@ namespace AdjustTransitCapacity
             }
         }
 
-        // ---- DEFAULT VALUES ----
+        // Defaults
+
         public override void SetDefaults()
         {
             // Depots (5 original types) — 1x vanilla
@@ -78,7 +80,8 @@ namespace AdjustTransitCapacity
             EnableDebugLogging = false;
         }
 
-        // ---- Helper: reset depot sliders to vanilla (1.0x) ----
+        // Helper: reset depot sliders to vanilla (1.0x)
+
         public void ResetDepotToVanilla()
         {
             BusDepotScalar = 1f;
@@ -88,7 +91,8 @@ namespace AdjustTransitCapacity
             SubwayDepotScalar = 1f;
         }
 
-        // ---- Helper: reset passenger sliders to vanilla (1.0x) ----
+        // Helper: reset passenger sliders to vanilla (1.0x)
+
         public void ResetPassengerToVanilla()
         {
             BusPassengerScalar = 1f;
@@ -100,12 +104,13 @@ namespace AdjustTransitCapacity
             AirplanePassengerScalar = 1f;
         }
 
-        // ---- APPLY CALLBACK ----
+        // Apply callback
+
         public override void Apply()
         {
             base.Apply();
 
-            // Tell the system to reapply multipliers once
+            // Request a one-shot reapply in the ECS system
             World world = World.DefaultGameObjectInjectionWorld;
             if (world == null)
             {
@@ -119,10 +124,8 @@ namespace AdjustTransitCapacity
             }
         }
 
-        // --------------------------------------------------------------------
-        // MAIN TAB: DEPOT CAPACITY (max vehicles per depot building)
+        // Main tab: depot capacity (max vehicles per depot building)
         // 1.0 = vanilla, 10.0 = 10x
-        // --------------------------------------------------------------------
 
         [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
             scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
@@ -164,7 +167,8 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        // ---- Depot: Reset to vanilla button ----
+        // Depot: reset to vanilla button
+
         [SettingsUIButtonGroup(DepotGroup)]
         [SettingsUIButton]
         [SettingsUISection(MainTab, DepotGroup)]
@@ -180,11 +184,9 @@ namespace AdjustTransitCapacity
             }
         }
 
-        // --------------------------------------------------------------------
-        // MAIN TAB: PASSENGER CAPACITY (max passengers per vehicle)
+        // Main tab: passenger capacity (max passengers per vehicle)
         // Taxi passenger capacity is not changed (CS2 keeps 4 seats).
         // 1.0 = vanilla, 10.0 = 10x
-        // --------------------------------------------------------------------
 
         [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
             scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
@@ -219,6 +221,7 @@ namespace AdjustTransitCapacity
         }
 
         // Passenger-only types (not depots)
+
         [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
             scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, PassengerGroup)]
@@ -243,7 +246,8 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        // ---- Passenger: Reset to vanilla button ----
+        // Passenger: reset to vanilla button
+
         [SettingsUIButtonGroup(PassengerGroup)]
         [SettingsUIButton]
         [SettingsUISection(MainTab, PassengerGroup)]
@@ -259,9 +263,7 @@ namespace AdjustTransitCapacity
             }
         }
 
-        // --------------------------------------------------------------------
-        // ABOUT TAB: INFO
-        // --------------------------------------------------------------------
+        // About tab: info
 
         [SettingsUISection(AboutTab, AboutInfoGroup)]
         public string ModNameDisplay => $"{Mod.ModName} {Mod.ModTag}";
@@ -269,9 +271,7 @@ namespace AdjustTransitCapacity
         [SettingsUISection(AboutTab, AboutInfoGroup)]
         public string ModVersionDisplay => Mod.ModVersion;
 
-        // --------------------------------------------------------------------
-        // ABOUT TAB: LINKS
-        // --------------------------------------------------------------------
+        // About tab: links
 
         [SettingsUIButtonGroup(AboutLinksGroup)]
         [SettingsUIButton]
@@ -315,9 +315,7 @@ namespace AdjustTransitCapacity
             }
         }
 
-        // --------------------------------------------------------------------
-        // ABOUT TAB: DEBUG
-        // --------------------------------------------------------------------
+        // About tab: debug
 
         [SettingsUISection(AboutTab, DebugGroup)]
         public bool EnableDebugLogging

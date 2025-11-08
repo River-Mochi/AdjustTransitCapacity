@@ -1,11 +1,11 @@
 // AdjustTransitCapacitySystem.cs
 // Purpose: apply multipliers for depot max vehicles and passenger max riders
-//          based on current settings. Uses per-entity baselines and SystemAPI
-//          queries so values never "stack" across reloads or setting changes.
+//          based on current settings. Uses PrefabSystem + PrefabBase to read
+//          vanilla capacities, so values never stack and never depend on other
+//          runtime changes.
 
 namespace AdjustTransitCapacity
 {
-    using System.Collections.Generic;
     using Colossal.Serialization.Entities; // Purpose, GameMode
     using Game;
     using Game.Prefabs;
@@ -13,21 +13,18 @@ namespace AdjustTransitCapacity
 
     public sealed partial class AdjustTransitCapacitySystem : GameSystemBase
     {
-        // ---- BASELINE CACHES ----
-        // depot entity -> vanilla vehicle capacity
-        private readonly Dictionary<Entity, int> m_OriginalDepotCapacity =
-            new Dictionary<Entity, int>();
-
-        // vehicle entity -> vanilla passenger capacity
-        private readonly Dictionary<Entity, int> m_OriginalPassengerCapacity =
-            new Dictionary<Entity, int>();
+        // PrefabSystem gives PrefabBase, from which original (vanilla) component
+        // values are read safely.
+        private PrefabSystem? m_PrefabSystem;
 
         // ---- LIFECYCLE: CREATE / DESTROY ----
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            // Only run when there are depots or vehicles in the world.
+            // Grab PrefabSystem once.
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+
             // Build queries via SystemAPI.QueryBuilder just for RequireForUpdate.
             var depotQuery = SystemAPI.QueryBuilder()
                                       .WithAll<TransportDepotData>()
@@ -45,8 +42,7 @@ namespace AdjustTransitCapacity
 
         /// <summary>
         /// Called after a save or new game has finished loading.
-        /// Clears cached baselines because entity IDs and vanilla values
-        /// can differ between cities.
+        /// Re-enables once so the system can reapply the sliders.
         /// </summary>
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
@@ -61,9 +57,6 @@ namespace AdjustTransitCapacity
                 return;
             }
 
-            m_OriginalDepotCapacity.Clear();
-            m_OriginalPassengerCapacity.Clear();
-
             Mod.Log.Info($"{Mod.ModTag} AdjustTransitCapacitySystem: GameLoadingComplete → reapply settings");
 
             Enabled = true;
@@ -71,8 +64,6 @@ namespace AdjustTransitCapacity
 
         protected override void OnDestroy()
         {
-            m_OriginalDepotCapacity.Clear();
-            m_OriginalPassengerCapacity.Clear();
             base.OnDestroy();
         }
 
@@ -85,41 +76,48 @@ namespace AdjustTransitCapacity
                 return;
             }
 
-            Setting settings = Mod.Settings;
+            if (m_PrefabSystem == null)
+            {
+                Mod.Log.Warn($"{Mod.ModTag} PrefabSystem not available; skipping capacity adjustment.");
+                Enabled = false;
+                return;
+            }
+
+            var settings = Mod.Settings;
             bool debug = settings.EnableDebugLogging;
 
-            // ---- DEPOTS (5 types: Bus / Taxi / Tram / Train / Subway) ----
+            // ==== DEPOTS (5 types: Bus / Taxi / Tram / Train / Subway) ====
             foreach (var (depotRef, entity) in SystemAPI
                          .Query<RefRW<TransportDepotData>>()
                          .WithEntityAccess())
             {
                 ref TransportDepotData depotData = ref depotRef.ValueRW;
 
-                // Capture vanilla capacity once per entity.
-                if (!m_OriginalDepotCapacity.TryGetValue(entity, out int baseCapacity))
-                {
-                    baseCapacity = depotData.m_VehicleCapacity;
-                    if (baseCapacity < 1)
-                    {
-                        baseCapacity = 1;
-                    }
-
-                    m_OriginalDepotCapacity[entity] = baseCapacity;
-
-                    if (debug)
-                    {
-                        Mod.Log.Info(
-                            $"{Mod.ModTag} Depot baseline set: entity={entity.Index}:{entity.Version} " +
-                            $"type={depotData.m_TransportType} baseCapacity={baseCapacity}");
-                    }
-                }
-
                 float scalar = GetDepotScalar(settings, depotData.m_TransportType);
-
-                // If scalar is exactly 1, leave vanilla.
                 if (scalar == 1f)
                 {
+                    // 1.0x → leave vanilla
                     continue;
+                }
+
+                // Vanilla base from PrefabBase via PrefabSystem.
+                int baseCapacity;
+                if (!TryGetDepotBaseCapacity(m_PrefabSystem, entity, out baseCapacity))
+                {
+                    if (debug)
+                    {
+                        Mod.Log.Warn(
+                            $"{Mod.ModTag} Depot: failed to get base capacity " +
+                            $"for entity={entity.Index}:{entity.Version}, type={depotData.m_TransportType}. " +
+                            "Falling back to current component value.");
+                    }
+
+                    baseCapacity = depotData.m_VehicleCapacity;
+                }
+
+                if (baseCapacity < 1)
+                {
+                    baseCapacity = 1;
                 }
 
                 int newCapacity = (int)(baseCapacity * scalar);
@@ -149,31 +147,31 @@ namespace AdjustTransitCapacity
             {
                 ref PublicTransportVehicleData vehicleData = ref vehicleRef.ValueRW;
 
-                // Capture vanilla passenger capacity once per entity.
-                if (!m_OriginalPassengerCapacity.TryGetValue(entity, out int basePassengers))
-                {
-                    basePassengers = vehicleData.m_PassengerCapacity;
-                    if (basePassengers < 1)
-                    {
-                        basePassengers = 1;
-                    }
-
-                    m_OriginalPassengerCapacity[entity] = basePassengers;
-
-                    if (debug)
-                    {
-                        Mod.Log.Info(
-                            $"{Mod.ModTag} Vehicle baseline set: entity={entity.Index}:{entity.Version} " +
-                            $"type={vehicleData.m_TransportType} basePassengers={basePassengers}");
-                    }
-                }
-
                 float scalar = GetPassengerScalar(settings, vehicleData.m_TransportType);
-
-                // For Taxi and any unsupported type, GetPassengerScalar returns 1 → no change.
                 if (scalar == 1f)
                 {
+                    // 1.0x → leave vanilla (this also skips Taxi)
                     continue;
+                }
+
+                // Vanilla base from PrefabBase via PrefabSystem.
+                int basePassengers;
+                if (!TryGetPassengerBaseCapacity(m_PrefabSystem, entity, out basePassengers))
+                {
+                    if (debug)
+                    {
+                        Mod.Log.Warn(
+                            $"{Mod.ModTag} Vehicle: failed to get base passenger capacity " +
+                            $"for entity={entity.Index}:{entity.Version}, type={vehicleData.m_TransportType}. " +
+                            "Falling back to current component value.");
+                    }
+
+                    basePassengers = vehicleData.m_PassengerCapacity;
+                }
+
+                if (basePassengers < 1)
+                {
+                    basePassengers = 1;
                 }
 
                 int newPassengers = (int)(basePassengers * scalar);
@@ -200,7 +198,57 @@ namespace AdjustTransitCapacity
             Enabled = false;
         }
 
-        // ---- HELPERS: DEPOT SCALAR ----
+        // =================================================================
+        // PREFAB HELPERS: ALWAYS READ VANILLA FROM PrefabBase
+        // =================================================================
+
+        private static bool TryGetDepotBaseCapacity(
+            PrefabSystem prefabSystem,
+            Entity entity,
+            out int baseCapacity)
+        {
+            baseCapacity = 0;
+
+            if (!prefabSystem.TryGetPrefab(entity, out PrefabBase prefabBase))
+            {
+                return false;
+            }
+
+            // TransportDepot prefab holds m_VehicleCapacity.
+            if (!prefabBase.TryGet(out TransportDepot depotPrefab))
+            {
+                return false;
+            }
+
+            baseCapacity = depotPrefab.m_VehicleCapacity;
+            return true;
+        }
+
+        private static bool TryGetPassengerBaseCapacity(
+            PrefabSystem prefabSystem,
+            Entity entity,
+            out int basePassengers)
+        {
+            basePassengers = 0;
+
+            if (!prefabSystem.TryGetPrefab(entity, out PrefabBase prefabBase))
+            {
+                return false;
+            }
+
+            // PublicTransport prefab holds m_PassengerCapacity.
+            if (!prefabBase.TryGet(out PublicTransport publicTransportPrefab))
+            {
+                return false;
+            }
+
+            basePassengers = publicTransportPrefab.m_PassengerCapacity;
+            return true;
+        }
+
+        // =================================================================
+        // DEPOT / PASSENGER SCALAR HELPERS
+        // =================================================================
 
         /// <summary>
         /// Depot multipliers: 1.0–10.0x.
@@ -231,7 +279,6 @@ namespace AdjustTransitCapacity
                     return 1f;
             }
 
-            // Clamp to 1x–10x for safety, using Setting constants.
             if (scalar < Setting.MinScalar)
             {
                 scalar = Setting.MinScalar;
@@ -243,8 +290,6 @@ namespace AdjustTransitCapacity
 
             return scalar;
         }
-
-        // ---- HELPERS: PASSENGER SCALAR ----
 
         /// <summary>
         /// Passenger multipliers: 1.0–10.0x.
@@ -277,7 +322,7 @@ namespace AdjustTransitCapacity
                     scalar = settings.AirplanePassengerScalar;
                     break;
                 default:
-                    // Includes Taxi → leave at vanilla value.
+                    // Includes Taxi -> leave at vanilla value.
                     return 1f;
             }
 

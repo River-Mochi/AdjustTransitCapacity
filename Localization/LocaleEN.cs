@@ -1,5 +1,5 @@
-// LocaleEN.cs
-// English (en-US) for Options UI.
+// Localization/LocaleEN.cs
+// English (en-US) strings for Options UI.
 
 namespace AdjustTransitCapacity
 {
@@ -21,7 +21,7 @@ namespace AdjustTransitCapacity
         {
             return new Dictionary<string, string>
             {
-                // ---- MOD TITLE / TABS / GROUPS ----
+                // Mod title / tabs / groups
                 { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity [ATC]" },
 
                 { m_Setting.GetOptionTabLocaleID(Setting.MainTab),  "Main"  },
@@ -38,7 +38,7 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup),
                     "Debug / Logging" },
 
-                // ---- DEPOT LABELS & DESCRIPTIONS (1x–10x) ----
+                // Depot labels & descriptions (1.0–10.0x)
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Bus depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotScalar)),
                     "How many buses each bus depot can maintain/spawn.\n" +
@@ -60,7 +60,13 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotScalar)),
                     "How many subway vehicles each depot can maintain (1.0× – 10.0×)." },
 
-                // ---- PASSENGER LABELS & DESCRIPTIONS (1x–10x) ----
+                // Depot reset button
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
+                    "Reset Depot to Defaults" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
+                    "Set all depot multipliers back to **1.0×** (game's default capacity - vanilla)." },
+
+                // Passenger labels & descriptions (1.0–10.0x)
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Bus passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerScalar)),
                     "Multiplier for bus passenger seats.\n" +
@@ -90,14 +96,20 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerScalar)),
                     "Multiplier for passenger airplane capacity." },
 
-                // ---- ABOUT TAB: INFO ----
+                // Passenger reset button
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
+                    "Reset to defaults" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
+                    "Set all passenger multipliers back to **1.0×** (game's default capacity - vanilla)." },
+
+                // About tab: info
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModNameDisplay)),    "Mod" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModNameDisplay)),     "Display name of this mod." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModVersionDisplay)), "Version" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModVersionDisplay)),  "Current mod version." },
 
-                // ---- ABOUT TAB: LINKS ----
+                // About tab: links
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox Mods" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenParadoxMods)),
                     "Open this mod on the Paradox Mods site in a browser." },
@@ -106,7 +118,7 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenDiscord)),
                     "Open the community Discord in a browser." },
 
-                // ---- ABOUT TAB: DEBUG ----
+                // About tab: debug
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Enable debug logging" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnableDebugLogging)),
                     "When enabled, the mod writes extra capacity details to the game log.\n" +

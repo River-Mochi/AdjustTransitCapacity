@@ -10,6 +10,7 @@ namespace AdjustTransitCapacity
     using Game.SceneFlow;
     using Unity.Entities;
 
+    /// <summary>Mod entry point: registers settings, locales, and the ECS system.</summary>
     public sealed class Mod : IMod
     {
         public const string ModName = "Adjust Transit Capacity";
@@ -26,11 +27,11 @@ namespace AdjustTransitCapacity
         {
             Log.Info($"{ModName} v{ModVersion} OnLoad");
 
-            // ---- SETTINGS ----
+            // Settings
             var setting = new Setting(this);
             Settings = setting;
 
-            // ---- LOCALES ----
+            // Locales
             var lm = GameManager.instance?.localizationManager;
             if (lm != null)
             {
@@ -45,16 +46,16 @@ namespace AdjustTransitCapacity
                 Log.Warn($"{ModTag} LocalizationManager not found; settings UI texts may be missing.");
             }
 
-            // ---- LOAD SETTINGS FROM DISK ----
+            // Load saved settings
             AssetDatabase.global.LoadSettings(ModId, setting, new Setting(this));
 
-            // ---- REGISTER IN OPTIONS UI ----
+            // Register in options UI
             setting.RegisterInOptionsUI();
 
-            // ---- ECS SYSTEM SCHEDULING ----
+            // ECS system scheduling
             updateSystem.UpdateAfter<AdjustTransitCapacitySystem>(SystemUpdatePhase.PrefabUpdate);
 
-            // ---- APPLY ON ALREADY-RUNNING WORLD ----
+            // Apply immediately for already-running world
             World world = World.DefaultGameObjectInjectionWorld;
             if (world != null)
             {
