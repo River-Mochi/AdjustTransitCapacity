@@ -24,8 +24,8 @@ namespace AdjustTransitCapacity
                 // Mod Title / Tabs / Groups
                 { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity [ATC]" },
 
-                { m_Setting.GetOptionTabLocaleID(Setting.MainTab),  "Actions"  },
-                { m_Setting.GetOptionTabLocaleID(Setting.AboutTab), "About" },
+                { m_Setting.GetOptionTabLocaleID(Setting.ActionsTab), "Actions" },
+                { m_Setting.GetOptionTabLocaleID(Setting.AboutTab),   "About"   },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup),
                     "Depot capacity (max vehicles per depot)" },

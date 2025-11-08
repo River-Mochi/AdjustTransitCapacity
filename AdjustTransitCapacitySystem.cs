@@ -1,8 +1,7 @@
 // AdjustTransitCapacitySystem.cs
-// Purpose: apply multipliers for depot max vehicles and passenger max riders
-//          based on current settings. PrefabSystem + PrefabBase are used to
-//          read vanilla capacities so values never stack and never depend on
-//          other runtime changes.
+// Applies depot and passenger capacity multipliers based on settings.
+// PrefabSystem + PrefabBase are used to read vanilla capacities so values
+// never stack and do not depend on other runtime changes.
 
 namespace AdjustTransitCapacity
 {
@@ -13,11 +12,11 @@ namespace AdjustTransitCapacity
 
     public sealed partial class AdjustTransitCapacitySystem : GameSystemBase
     {
-        // PrefabSystem provides PrefabBase, which exposes the original
-        // (vanilla) component values for each prefab.
+        // PrefabSystem provides PrefabBase, which exposes the original prefab data.
         private PrefabSystem m_PrefabSystem = null!;
 
-        // ---- LIFECYCLE ----
+        // Lifecycle
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -62,7 +61,8 @@ namespace AdjustTransitCapacity
             base.OnDestroy();
         }
 
-        // ---- MAIN UPDATE ----
+        // Main update
+
         protected override void OnUpdate()
         {
             if (Mod.Settings == null)
@@ -74,7 +74,7 @@ namespace AdjustTransitCapacity
             Setting settings = Mod.Settings;
             bool debug = settings.EnableDebugLogging;
 
-            // ---- DEPOTS (Bus / Taxi / Tram / Train / Subway) ----
+            // Depots (Bus / Taxi / Tram / Train / Subway)
             foreach (var (depotRef, entity) in SystemAPI
                          .Query<RefRW<TransportDepotData>>()
                          .WithEntityAccess())
@@ -83,7 +83,6 @@ namespace AdjustTransitCapacity
 
                 float scalar = GetDepotScalar(settings, depotData.m_TransportType);
 
-                // Get vanilla base from PrefabBase via PrefabSystem.
                 int baseCapacity;
                 if (!TryGetDepotBaseCapacity(entity, out baseCapacity))
                 {
@@ -123,7 +122,7 @@ namespace AdjustTransitCapacity
                 }
             }
 
-            // ---- PASSENGERS (affect vehicle capacity only; taxi seats unchanged) ----
+            // Passengers (vehicle seat capacity; taxi seats unchanged)
             foreach (var (vehicleRef, entity) in SystemAPI
                          .Query<RefRW<PublicTransportVehicleData>>()
                          .WithEntityAccess())
@@ -132,7 +131,6 @@ namespace AdjustTransitCapacity
 
                 float scalar = GetPassengerScalar(settings, vehicleData.m_TransportType);
 
-                // Get vanilla base from PrefabBase via PrefabSystem.
                 int basePassengers;
                 if (!TryGetPassengerBaseCapacity(entity, out basePassengers))
                 {
@@ -172,11 +170,11 @@ namespace AdjustTransitCapacity
                 }
             }
 
-            // Run-once; either Setting.Apply() or city load will enable again.
+            // Run once; Setting.Apply() or city load will enable again when needed.
             Enabled = false;
         }
 
-        // ---- PREFAB HELPERS: READ VANILLA FROM PrefabBase ----
+        // Prefab helpers: read vanilla values from PrefabBase
 
         private bool TryGetDepotBaseCapacity(Entity entity, out int baseCapacity)
         {
@@ -224,9 +222,9 @@ namespace AdjustTransitCapacity
             return true;
         }
 
-        // ---- DEPOT / PASSENGER SCALAR HELPERS ----
+        // Scalar helpers
 
-        // Depot multipliers: 1.0–10.0x. Any other depot type is left at vanilla.
+        // Depot multipliers: 1.0x–10.0x. Any other depot type is left at vanilla.
         private static float GetDepotScalar(Setting settings, TransportType type)
         {
             float scalar;
@@ -264,7 +262,7 @@ namespace AdjustTransitCapacity
             return scalar;
         }
 
-        // Passenger multipliers: 1.0–10.0x. Taxi seats are not changed.
+        // Passenger multipliers: 1.0x–10.0x. Taxi seats are not changed.
         private static float GetPassengerScalar(Setting settings, TransportType type)
         {
             float scalar;

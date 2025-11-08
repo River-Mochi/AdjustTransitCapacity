@@ -10,17 +10,16 @@ namespace AdjustTransitCapacity
     using Game.SceneFlow;
     using Unity.Entities;
 
-    /// <summary>Mod entry point: registers settings, locales, and the ECS system.</summary>
+    /// <summary>Mod entry point: registers settings, locales, and ECS system.</summary>
     public sealed class Mod : IMod
     {
-        // ----- Public constants / metadata -----
         public const string ModName = "Adjust Transit Capacity";
         public const string ModId = "AdjustTransitCapacity";
         public const string ModTag = "[ATC]";
         public const string ModVersion = "1.2.7";
+
         private static bool s_BannerLogged;
 
-        // ----- Logger & public properties ----
         public static readonly ILog Log =
             LogManager.GetLogger(ModId).SetShowsErrorsInUI(false);
 
@@ -28,17 +27,15 @@ namespace AdjustTransitCapacity
 
         public void OnLoad(UpdateSystem updateSystem)
         {
-            // metadata banner (once only)
             Log.Info($"{ModName} v{ModVersion} OnLoad");
             if (!s_BannerLogged)
+            {
                 s_BannerLogged = true;
+            }
 
-
-            // Settings (must exist before locales so labels resolve)
             var setting = new Setting(this);
             Settings = setting;
 
-            // Register locales BEFORE Options UI
             var lm = GameManager.instance?.localizationManager;
             if (lm != null)
             {
@@ -53,16 +50,14 @@ namespace AdjustTransitCapacity
                 Log.Warn($"{ModTag} LocalizationManager not found; settings UI texts may be missing.");
             }
 
-            // Load saved settings
             AssetDatabase.global.LoadSettings(ModId, setting, new Setting(this));
 
-            // Register in options UI
             setting.RegisterInOptionsUI();
 
-            // ECS system scheduling
+            // Scheduled after PrefabUpdate so prefab data and components are initialized.
             updateSystem.UpdateAfter<AdjustTransitCapacitySystem>(SystemUpdatePhase.PrefabUpdate);
 
-            // Apply immediately for already-running city
+            // Enable once for an already-running city (if any city exists).
             World world = World.DefaultGameObjectInjectionWorld;
             if (world != null)
             {
