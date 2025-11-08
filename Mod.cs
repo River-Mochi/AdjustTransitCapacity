@@ -27,7 +27,7 @@ namespace AdjustTransitCapacity
             Log.Info($"{ModName} v{ModVersion} OnLoad");
 
             // ---- SETTINGS ----
-            Setting setting = new Setting(this);
+            var setting = new Setting(this);
             Settings = setting;
 
             // ---- LOCALES ----
@@ -42,7 +42,7 @@ namespace AdjustTransitCapacity
             }
             else
             {
-                Log.Warn("LocalizationManager not found; settings UI texts may be missing.");
+                Log.Warn($"{ModTag} LocalizationManager not found; settings UI texts may be missing.");
             }
 
             // ---- LOAD SETTINGS FROM DISK ----
@@ -58,8 +58,7 @@ namespace AdjustTransitCapacity
             World world = World.DefaultGameObjectInjectionWorld;
             if (world != null)
             {
-                AdjustTransitCapacitySystem system =
-                    world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
+                var system = world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
                 if (system != null)
                 {
                     system.Enabled = true;

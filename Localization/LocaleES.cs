@@ -21,50 +21,97 @@ namespace AdjustTransitCapacity
         {
             return new Dictionary<string, string>
             {
-                // ---- MOD TITLE / TAB / GROUPS ----
-                { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity" },
-                { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Principal" },
+                // ---- MOD TITLE / TABS / GROUPS ----
+                { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity [ATC]" },
 
-                { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Capacidad del depósito (vehículos máximos)" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup), "Capacidad de pasajeros (viajeros por vehículo)" },
+                { m_Setting.GetOptionTabLocaleID(Setting.MainTab),  "Principal" },
+                { m_Setting.GetOptionTabLocaleID(Setting.AboutTab), "Acerca de" },
 
-                // ---- DEPOT LABELS & DESCRIPTIONS ----
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotPercent)), "Depósitos de autobuses" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotPercent)), "Cuántos autobuses puede mantener/generar cada depósito de autobuses. 100 % = juego base, 1000 % = 10×." },
+                { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup),
+                    "Capacidad del depósito (vehículos máx. por depósito)" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup),
+                    "Capacidad de pasajeros (máx. pasajeros por vehículo)" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutInfoGroup),
+                    "Información" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutLinksGroup),
+                    "Enlaces de soporte" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup),
+                    "Depuración / Registros" },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotPercent)), "Depósitos de taxis" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotPercent)), "Cuántos taxis puede mantener cada depósito de taxis." },
+                // ---- DEPÓSITOS ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Depósitos de autobuses" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotScalar)),
+                    "Cantidad de autobuses que cada depósito puede mantener.\n" +
+                    "Usa un multiplicador entre **1,0×** (vanilla) y **10,0×**." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotPercent)), "Depósitos de tranvías" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotPercent)), "Cuántos tranvías puede mantener cada depósito de tranvías." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Depósitos de taxis" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotScalar)),
+                    "Cantidad de taxis que cada depósito puede mantener (1,0× – 10,0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotPercent)), "Depósitos de trenes" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotPercent)), "Cuántos trenes puede mantener cada depósito de trenes." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Depósitos de tranvías" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotScalar)),
+                    "Cantidad de tranvías que cada depósito puede mantener (1,0× – 10,0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotPercent)), "Depósitos de metro" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotPercent)), "Cuántos vehículos de metro puede mantener cada depósito." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Depósitos de trenes" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotScalar)),
+                    "Cantidad de trenes que cada depósito puede mantener (1,0× – 10,0×)." },
 
-                // ---- PASSENGER LABELS & DESCRIPTIONS ----
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerPercent)), "Pasajeros – autobús" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerPercent)), "Multiplicador para los asientos de los autobuses. 100 % = capacidad base, 1000 % = 10× asientos." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "Depósitos de metro" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotScalar)),
+                    "Cantidad de trenes de metro que cada depósito puede mantener (1,0× – 10,0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerPercent)), "Pasajeros – tranvía" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramPassengerPercent)), "Multiplicador para los asientos de los tranvías." },
+                // ---- PASAJEROS ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Pasajeros – autobús" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerScalar)),
+                    "Multiplicador para la capacidad de pasajeros del autobús.\n" +
+                    "**1,0×** = capacidad vanilla, **10,0×** = diez veces más asientos." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerPercent)), "Pasajeros – tren" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainPassengerPercent)), "Multiplicador para los asientos de los trenes." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerScalar)), "Pasajeros – tranvía" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramPassengerScalar)),
+                    "Multiplicador para la capacidad de pasajeros del tranvía (1,0× – 10,0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayPassengerPercent)), "Pasajeros – metro" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayPassengerPercent)), "Multiplicador para los asientos del metro." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerScalar)), "Pasajeros – tren" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainPassengerScalar)),
+                    "Multiplicador para la capacidad de pasajeros del tren (1,0× – 10,0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerPercent)), "Pasajeros – barco" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ShipPassengerPercent)), "Multiplicador para barcos de pasajeros (no de carga)." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayPassengerScalar)), "Pasajeros – metro" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayPassengerScalar)),
+                    "Multiplicador para la capacidad de pasajeros del metro (1,0× – 10,0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerPercent)), "Pasajeros – ferry" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.FerryPassengerPercent)), "Multiplicador para ferris." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerScalar)), "Pasajeros – barco" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ShipPassengerScalar)),
+                    "Multiplicador para barcos **de pasajeros** solamente (no cargueros)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerPercent)), "Pasajeros – avión" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerPercent)), "Multiplicador para aviones de pasajeros." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerScalar)), "Pasajeros – ferry" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.FerryPassengerScalar)),
+                    "Multiplicador para la capacidad de pasajeros del ferry." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerScalar)), "Pasajeros – avión" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerScalar)),
+                    "Multiplicador para la capacidad de pasajeros del avión." },
+
+                // ---- ACERCA DE: INFO ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModNameDisplay)),    "Mod" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModNameDisplay)),     "Nombre mostrado de este mod." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModVersionDisplay)), "Versión" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModVersionDisplay)),  "Versión actual del mod." },
+
+                // ---- ACERCA DE: ENLACES ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox Mods" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenParadoxMods)),
+                    "Abrir este mod en el sitio Paradox Mods en el navegador." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenDiscord)), "Discord" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenDiscord)),
+                    "Abrir el servidor de Discord de la comunidad en el navegador." },
+
+                // ---- DEPURACIÓN ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Activar registro de depuración" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnableDebugLogging)),
+                    "Cuando está activado, el mod escribe más detalles sobre las capacidades " +
+                    "en el registro del juego.\n" +
+                    "Útil para depurar, pero puede llenar el registro." },
             };
         }
 

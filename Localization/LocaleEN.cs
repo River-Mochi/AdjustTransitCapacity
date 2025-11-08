@@ -21,50 +21,96 @@ namespace AdjustTransitCapacity
         {
             return new Dictionary<string, string>
             {
-                // ---- MOD TITLE / TAB / GROUPS ----
+                // ---- MOD TITLE / TABS / GROUPS ----
                 { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity [ATC]" },
-                { m_Setting.GetOptionTabLocaleID(Setting.MainTab), "Main" },
 
-                { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup), "Depot capacity (max vehicles per depot)" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup), "Passenger capacity (max riders per vehicle)" },
+                { m_Setting.GetOptionTabLocaleID(Setting.MainTab),  "Main"  },
+                { m_Setting.GetOptionTabLocaleID(Setting.AboutTab), "About" },
 
-                // ---- DEPOT LABELS & DESCRIPTIONS ----
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotPercent)), "Bus depots" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotPercent)), "How many buses each bus depot can maintain/spawn. 100% = vanilla, 1000% = 10×." },
+                { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup),
+                    "Depot capacity (max vehicles per depot)" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup),
+                    "Passenger capacity (max riders per vehicle)" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutInfoGroup),
+                    "Info" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutLinksGroup),
+                    "Support links" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup),
+                    "Debug / Logging" },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotPercent)), "Taxi depots" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotPercent)), "How many taxis each taxi depot can maintain." },
+                // ---- DEPOT LABELS & DESCRIPTIONS (1x–10x) ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Bus depots" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotScalar)),
+                    "How many buses each bus depot can maintain/spawn.\n" +
+                    "Use a multiplier between **1.0×** (vanilla) and **10.0×**." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotPercent)), "Tram depots" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotPercent)), "How many trams each tram depot can maintain." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Taxi depots" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotScalar)),
+                    "How many taxis each taxi depot can maintain (1.0× – 10.0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotPercent)), "Train depots" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotPercent)), "How many trains each train depot can maintain." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Tram depots" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotScalar)),
+                    "How many trams each tram depot can maintain (1.0× – 10.0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotPercent)), "Subway depots" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotPercent)), "How many subway vehicles each depot can maintain." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Train depots" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotScalar)),
+                    "How many trains each train depot can maintain (1.0× – 10.0×)." },
 
-                // ---- PASSENGER LABELS & DESCRIPTIONS ----
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerPercent)), "Bus passengers" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerPercent)), "Multiplier for bus passenger seats. 100% = vanilla seats, 1000% = 10× seats." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "Subway depots" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotScalar)),
+                    "How many subway vehicles each depot can maintain (1.0× – 10.0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerPercent)), "Tram passengers" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramPassengerPercent)), "Multiplier for tram passenger seats." },
+                // ---- PASSENGER LABELS & DESCRIPTIONS (1x–10x) ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Bus passengers" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerScalar)),
+                    "Multiplier for bus passenger seats.\n" +
+                    "**1.0×** = vanilla seats, **10.0×** = ten times more seats." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerPercent)), "Train passengers" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainPassengerPercent)), "Multiplier for train passenger seats." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerScalar)), "Tram passengers" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramPassengerScalar)),
+                    "Multiplier for tram passenger seats (1.0× – 10.0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayPassengerPercent)), "Subway passengers" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayPassengerPercent)), "Multiplier for subway passenger seats." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerScalar)), "Train passengers" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainPassengerScalar)),
+                    "Multiplier for train passenger seats (1.0× – 10.0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerPercent)), "Ship passengers" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ShipPassengerPercent)), "Multiplier for passenger ships only (not cargo ships)." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayPassengerScalar)), "Subway passengers" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayPassengerScalar)),
+                    "Multiplier for subway passenger seats (1.0× – 10.0×)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerPercent)), "Ferry passengers" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.FerryPassengerPercent)), "Multiplier for ferries." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerScalar)), "Ship passengers" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ShipPassengerScalar)),
+                    "Multiplier for **passenger** ships only (not cargo ships)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerPercent)), "Airplane passengers" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerPercent)), "Multiplier for passenger airplanes." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerScalar)), "Ferry passengers" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.FerryPassengerScalar)),
+                    "Multiplier for ferry passenger capacity." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerScalar)), "Airplane passengers" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerScalar)),
+                    "Multiplier for passenger airplane capacity." },
+
+                // ---- ABOUT TAB: INFO ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModNameDisplay)),    "Mod" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModNameDisplay)),     "Display name of this mod." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModVersionDisplay)), "Version" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModVersionDisplay)),  "Current mod version." },
+
+                // ---- ABOUT TAB: LINKS ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox Mods" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenParadoxMods)),
+                    "Open this mod on the Paradox Mods site in a browser." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenDiscord)), "Discord" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenDiscord)),
+                    "Open the community Discord in a browser." },
+
+                // ---- ABOUT TAB: DEBUG ----
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Enable debug logging" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnableDebugLogging)),
+                    "When enabled, the mod writes extra capacity details to the game log.\n" +
+                    "Useful for troubleshooting, but may spam the log." },
             };
         }
 

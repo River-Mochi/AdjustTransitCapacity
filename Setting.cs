@@ -3,35 +3,63 @@
 
 namespace AdjustTransitCapacity
 {
+    using System;
     using Colossal.IO.AssetDatabase;
     using Game.Modding;
     using Game.Settings;
     using Game.UI;
     using Unity.Entities;
+    using UnityEngine;
 
     // Keep custom location folder under ModsSettings
     [FileLocation("ModsSettings/AdjustTransitCapacity/AdjustTransitCapacity")]
-    [SettingsUIGroupOrder(DepotGroup, PassengerGroup)]
-    [SettingsUIShowGroupName(DepotGroup, PassengerGroup)]
+    [SettingsUIGroupOrder(
+        DepotGroup,
+        PassengerGroup,
+        AboutInfoGroup,
+        AboutLinksGroup,
+        DebugGroup
+    )]
+    [SettingsUIShowGroupName(
+        DepotGroup,
+        PassengerGroup,
+        AboutLinksGroup,
+        DebugGroup
+    )]
     public sealed class Setting : ModSetting
     {
-        // ---- TABS & GROUPS ----
+        // ---- TABS ----
         public const string MainTab = "Main";
+        public const string AboutTab = "About";
+
+        // ---- GROUPS (Main tab) ----
         public const string DepotGroup = "DepotCapacity";
         public const string PassengerGroup = "PassengerCapacity";
 
-        // ---- SHARED SLIDER RANGE ----
-        // 100% = 1x vanilla, 1000% = 10x
-        public const int MinPercent = 100;
-        public const int MaxPercent = 1000;
-        public const int StepPercent = 25;
+        // ---- GROUPS (About tab) ----
+        public const string AboutInfoGroup = "AboutInfo";
+        public const string AboutLinksGroup = "AboutLinks";
+        public const string DebugGroup = "Debug";
+
+        // ---- SHARED SLIDER RANGE (1x–10x) ----
+        // All sliders represent a direct multiplier: 1.0 = vanilla, 10.0 = 10x.
+        public const float MinScalar = 1f;
+        public const float MaxScalar = 10f;
+        public const float StepScalar = 0.25f;
+
+        // ---- External links ----
+        private const string UrlParadox =
+            "https://mods.paradoxplaza.com/uploaded?orderBy=desc&sortBy=best&time=alltime";
+
+        private const string UrlDiscord =
+            "https://discord.gg/HTav7ARPs2";
 
         // ---- CTOR ----
         public Setting(IMod mod)
             : base(mod)
         {
             // Brand-new settings file → populate defaults
-            if (BusDepotPercent == 0)
+            if (BusDepotScalar == 0f)
             {
                 SetDefaults();
             }
@@ -40,21 +68,24 @@ namespace AdjustTransitCapacity
         // ---- DEFAULT VALUES ----
         public override void SetDefaults()
         {
-            // Depots (5 original types)
-            BusDepotPercent = 100;
-            TaxiDepotPercent = 100;
-            TramDepotPercent = 100;
-            TrainDepotPercent = 100;
-            SubwayDepotPercent = 100;
+            // Depots (5 original types) — 1x vanilla
+            BusDepotScalar = 1f;
+            TaxiDepotScalar = 1f;
+            TramDepotScalar = 1f;
+            TrainDepotScalar = 1f;
+            SubwayDepotScalar = 1f;
 
             // Passengers (taxis stay vanilla 4 seats in game)
-            BusPassengerPercent = 100;
-            TramPassengerPercent = 100;
-            TrainPassengerPercent = 100;
-            SubwayPassengerPercent = 100;
-            ShipPassengerPercent = 100;
-            FerryPassengerPercent = 100;
-            AirplanePassengerPercent = 100;
+            BusPassengerScalar = 1f;
+            TramPassengerScalar = 1f;
+            TrainPassengerScalar = 1f;
+            SubwayPassengerScalar = 1f;
+            ShipPassengerScalar = 1f;
+            FerryPassengerScalar = 1f;
+            AirplanePassengerScalar = 1f;
+
+            // Debug off by default
+            EnableDebugLogging = false;
         }
 
         // ---- APPLY CALLBACK ----
@@ -69,101 +100,183 @@ namespace AdjustTransitCapacity
                 return;
             }
 
-            AdjustTransitCapacitySystem system =
-                world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
+            var system = world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
             if (system != null)
             {
                 system.Enabled = true;
             }
         }
 
-        // ---- DEPOT CAPACITY (max vehicles per depot building) ----
-        // 100% = vanilla, 1000% = 10x
+        // --------------------------------------------------------------------
+        // MAIN TAB: DEPOT CAPACITY (max vehicles per depot building)
+        // 1.0 = vanilla, 10.0 = 10x
+        // --------------------------------------------------------------------
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, DepotGroup)]
-        public int BusDepotPercent
+        public float BusDepotScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, DepotGroup)]
-        public int TaxiDepotPercent
+        public float TaxiDepotScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, DepotGroup)]
-        public int TramDepotPercent
+        public float TramDepotScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, DepotGroup)]
-        public int TrainDepotPercent
+        public float TrainDepotScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, DepotGroup)]
-        public int SubwayDepotPercent
+        public float SubwayDepotScalar
         {
             get; set;
         }
 
-        // ---- PASSENGER CAPACITY (max passengers per vehicle) ----
+        // --------------------------------------------------------------------
+        // MAIN TAB: PASSENGER CAPACITY (max passengers per vehicle)
         // Taxi passenger capacity is not changed (CS2 keeps 4 seats).
+        // 1.0 = vanilla, 10.0 = 10x
+        // --------------------------------------------------------------------
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, PassengerGroup)]
-        public int BusPassengerPercent
+        public float BusPassengerScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, PassengerGroup)]
-        public int TramPassengerPercent
+        public float TramPassengerScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, PassengerGroup)]
-        public int TrainPassengerPercent
+        public float TrainPassengerScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, PassengerGroup)]
-        public int SubwayPassengerPercent
+        public float SubwayPassengerScalar
         {
             get; set;
         }
 
         // Passenger-only types (not depots)
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, PassengerGroup)]
-        public int ShipPassengerPercent
+        public float ShipPassengerScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, PassengerGroup)]
-        public int FerryPassengerPercent
+        public float FerryPassengerScalar
         {
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent, scalarMultiplier = 1, unit = Unit.kPercentage)]
+        [SettingsUISlider(min = MinScalar, max = MaxScalar, step = StepScalar,
+            scalarMultiplier = 1, unit = Unit.kFloatSingleFraction)]
         [SettingsUISection(MainTab, PassengerGroup)]
-        public int AirplanePassengerPercent
+        public float AirplanePassengerScalar
+        {
+            get; set;
+        }
+
+        // --------------------------------------------------------------------
+        // ABOUT TAB: INFO
+        // --------------------------------------------------------------------
+
+        [SettingsUISection(AboutTab, AboutInfoGroup)]
+        public string ModNameDisplay => $"{Mod.ModName} {Mod.ModTag}";
+
+        [SettingsUISection(AboutTab, AboutInfoGroup)]
+        public string ModVersionDisplay => Mod.ModVersion;
+
+        // --------------------------------------------------------------------
+        // ABOUT TAB: LINKS
+        // --------------------------------------------------------------------
+
+        [SettingsUIButtonGroup(AboutLinksGroup)]
+        [SettingsUIButton]
+        [SettingsUISection(AboutTab, AboutLinksGroup)]
+        public bool OpenParadoxMods
+        {
+            set
+            {
+                if (!value)
+                    return;
+
+                try
+                {
+                    Application.OpenURL(UrlParadox);
+                }
+                catch (Exception)
+                {
+                    // ignore
+                }
+            }
+        }
+
+        [SettingsUIButtonGroup(AboutLinksGroup)]
+        [SettingsUIButton]
+        [SettingsUISection(AboutTab, AboutLinksGroup)]
+        public bool OpenDiscord
+        {
+            set
+            {
+                if (!value)
+                    return;
+
+                try
+                {
+                    Application.OpenURL(UrlDiscord);
+                }
+                catch (Exception)
+                {
+                    // ignore
+                }
+            }
+        }
+
+        // --------------------------------------------------------------------
+        // ABOUT TAB: DEBUG
+        // --------------------------------------------------------------------
+
+        [SettingsUISection(AboutTab, DebugGroup)]
+        public bool EnableDebugLogging
         {
             get; set;
         }

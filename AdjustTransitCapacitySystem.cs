@@ -1,6 +1,7 @@
 // AdjustTransitCapacitySystem.cs
 // Purpose: apply multipliers for depot max vehicles and passenger max riders
-//          based on current settings. Uses per-entity baselines to avoid stacking.
+//          based on current settings. Uses per-entity vanilla baselines to
+//          avoid stacking across reloads or settings changes.
 
 namespace AdjustTransitCapacity
 {
@@ -13,16 +14,12 @@ namespace AdjustTransitCapacity
 
     public sealed partial class AdjustTransitCapacitySystem : GameSystemBase
     {
-        // ---- DEBUG ----
-        // Set this to true while testing for lots of log output.
-        private const bool DebugLogging = true;
-
-        // ---- BASELINE CACHES ----
-        // depot entity -> vanilla vehicle capacity (per process, per entity)
+        // ---- CACHES ----
+        // depot entity -> vanilla vehicle capacity
         private readonly Dictionary<Entity, int> m_OriginalDepotCapacity =
             new Dictionary<Entity, int>();
 
-        // vehicle entity -> vanilla passenger capacity (per process, per entity)
+        // vehicle entity -> vanilla passenger capacity
         private readonly Dictionary<Entity, int> m_OriginalPassengerCapacity =
             new Dictionary<Entity, int>();
 
@@ -36,22 +33,12 @@ namespace AdjustTransitCapacity
             base.OnCreate();
 
             // Query all transport depots (prefabs with TransportDepotData)
-            m_DepotQuery = GetEntityQuery(new EntityQueryDesc
-            {
-                All = new[]
-                {
-                    ComponentType.ReadWrite<TransportDepotData>()
-                }
-            });
+            m_DepotQuery = GetEntityQuery(
+                ComponentType.ReadWrite<TransportDepotData>());
 
             // Query all public transport vehicles
-            m_VehicleQuery = GetEntityQuery(new EntityQueryDesc
-            {
-                All = new[]
-                {
-                    ComponentType.ReadWrite<PublicTransportVehicleData>()
-                }
-            });
+            m_VehicleQuery = GetEntityQuery(
+                ComponentType.ReadWrite<PublicTransportVehicleData>());
 
             RequireForUpdate(m_DepotQuery);
             RequireForUpdate(m_VehicleQuery);
@@ -62,8 +49,7 @@ namespace AdjustTransitCapacity
 
         /// <summary>
         /// Called after a save or new game has finished loading.
-        /// Re-applies settings once in the newly loaded city.
-        /// NOTE: baselines are NOT cleared here to avoid stacking between reloads.
+        /// Clears cached capacities because entity IDs & prefabs are rebuilt per city.
         /// </summary>
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
@@ -78,10 +64,8 @@ namespace AdjustTransitCapacity
                 return;
             }
 
-            if (DebugLogging)
-            {
-                Mod.Log.Info("[ATC] OnGameLoadingComplete → enabling system for one pass.");
-            }
+            m_OriginalDepotCapacity.Clear();
+            m_OriginalPassengerCapacity.Clear();
 
             Enabled = true;
         }
@@ -102,7 +86,8 @@ namespace AdjustTransitCapacity
                 return;
             }
 
-            Setting settings = Mod.Settings;
+            var settings = Mod.Settings;
+            bool debug = settings.EnableDebugLogging;
 
             // ---- DEPOTS (5 types: Bus / Taxi / Tram / Train / Subway) ----
             NativeArray<Entity> depots = m_DepotQuery.ToEntityArray(Allocator.Temp);
@@ -114,7 +99,14 @@ namespace AdjustTransitCapacity
                     TransportDepotData depotData =
                         EntityManager.GetComponentData<TransportDepotData>(depotEntity);
 
-                    // Determine baseline capacity (only once per entity)
+                    // Get scalar for this transport type (1.0–10.0, or 1.0 for others).
+                    float scalar = GetDepotScalar(settings, depotData.m_TransportType);
+                    if (scalar <= 0f)
+                    {
+                        scalar = 1f;
+                    }
+
+                    // Cache vanilla capacity once.
                     if (!m_OriginalDepotCapacity.TryGetValue(depotEntity, out int baseCapacity))
                     {
                         baseCapacity = depotData.m_VehicleCapacity;
@@ -125,31 +117,29 @@ namespace AdjustTransitCapacity
 
                         m_OriginalDepotCapacity[depotEntity] = baseCapacity;
 
-                        if (DebugLogging)
+                        if (debug)
                         {
                             Mod.Log.Info(
-                                $"[ATC] Depot baseline capture: entity={depotEntity.Index}, " +
-                                $"type={depotData.m_TransportType}, base={baseCapacity}");
+                                $"{Mod.ModTag} [Depot Baseline] Type={depotData.m_TransportType}, " +
+                                $"Entity={depotEntity.Index}, VanillaCapacity={baseCapacity}");
                         }
                     }
 
-                    float scalar = GetDepotScalar(settings, depotData.m_TransportType);
                     int newCapacity = (int)(baseCapacity * scalar);
                     if (newCapacity < 1)
                     {
                         newCapacity = 1;
                     }
 
+                    if (debug)
+                    {
+                        Mod.Log.Info(
+                            $"{Mod.ModTag} [Depot Apply] Type={depotData.m_TransportType}, " +
+                            $"Entity={depotEntity.Index}, Base={baseCapacity}, Scalar={scalar:F2}, New={newCapacity}");
+                    }
+
                     if (newCapacity != depotData.m_VehicleCapacity)
                     {
-                        if (DebugLogging)
-                        {
-                            Mod.Log.Info(
-                                $"[ATC] Depot apply: entity={depotEntity.Index}, type={depotData.m_TransportType}, " +
-                                $"base={baseCapacity}, scalar={scalar:F2}, " +
-                                $"old={depotData.m_VehicleCapacity}, new={newCapacity}");
-                        }
-
                         depotData.m_VehicleCapacity = newCapacity;
                         EntityManager.SetComponentData(depotEntity, depotData);
                     }
@@ -170,6 +160,18 @@ namespace AdjustTransitCapacity
                     PublicTransportVehicleData vehicleData =
                         EntityManager.GetComponentData<PublicTransportVehicleData>(vehicleEntity);
 
+                    float scalar = GetPassengerScalar(settings, vehicleData.m_TransportType);
+                    if (scalar <= 0f)
+                    {
+                        scalar = 1f;
+                    }
+
+                    // Taxi is intentionally left as vanilla in GetPassengerScalar.
+                    if (scalar == 1f && !IsHandledPassengerType(vehicleData.m_TransportType))
+                    {
+                        continue;
+                    }
+
                     if (!m_OriginalPassengerCapacity.TryGetValue(vehicleEntity, out int basePassengers))
                     {
                         basePassengers = vehicleData.m_PassengerCapacity;
@@ -180,31 +182,29 @@ namespace AdjustTransitCapacity
 
                         m_OriginalPassengerCapacity[vehicleEntity] = basePassengers;
 
-                        if (DebugLogging)
+                        if (debug)
                         {
                             Mod.Log.Info(
-                                $"[ATC] Vehicle baseline capture: entity={vehicleEntity.Index}, " +
-                                $"type={vehicleData.m_TransportType}, base={basePassengers}");
+                                $"{Mod.ModTag} [Passenger Baseline] Type={vehicleData.m_TransportType}, " +
+                                $"Entity={vehicleEntity.Index}, VanillaCapacity={basePassengers}");
                         }
                     }
 
-                    float scalar = GetPassengerScalar(settings, vehicleData.m_TransportType);
                     int newPassengers = (int)(basePassengers * scalar);
                     if (newPassengers < 1)
                     {
                         newPassengers = 1;
                     }
 
+                    if (debug)
+                    {
+                        Mod.Log.Info(
+                            $"{Mod.ModTag} [Passenger Apply] Type={vehicleData.m_TransportType}, " +
+                            $"Entity={vehicleEntity.Index}, Base={basePassengers}, Scalar={scalar:F2}, New={newPassengers}");
+                    }
+
                     if (newPassengers != vehicleData.m_PassengerCapacity)
                     {
-                        if (DebugLogging)
-                        {
-                            Mod.Log.Info(
-                                $"[ATC] Vehicle apply: entity={vehicleEntity.Index}, type={vehicleData.m_TransportType}, " +
-                                $"base={basePassengers}, scalar={scalar:F2}, " +
-                                $"old={vehicleData.m_PassengerCapacity}, new={newPassengers}");
-                        }
-
                         vehicleData.m_PassengerCapacity = newPassengers;
                         EntityManager.SetComponentData(vehicleEntity, vehicleData);
                     }
@@ -222,48 +222,41 @@ namespace AdjustTransitCapacity
         // ---- HELPERS: DEPOT SCALAR ----
 
         /// <summary>
-        /// Depot multipliers: 100%–1000%, internal scalar 1.0–10.0.
+        /// Depot multipliers: 1.0–10.0 (direct scalar).
         /// Any other depot type is left at vanilla (1.0).
+        /// Targets 5 depot types.
         /// </summary>
         private static float GetDepotScalar(Setting settings, TransportType type)
         {
-            int percent;
+            float scalar;
             switch (type)
             {
                 case TransportType.Bus:
-                    percent = settings.BusDepotPercent;
+                    scalar = settings.BusDepotScalar;
                     break;
                 case TransportType.Taxi:
-                    percent = settings.TaxiDepotPercent;
+                    scalar = settings.TaxiDepotScalar;
                     break;
                 case TransportType.Tram:
-                    percent = settings.TramDepotPercent;
+                    scalar = settings.TramDepotScalar;
                     break;
                 case TransportType.Train:
-                    percent = settings.TrainDepotPercent;
+                    scalar = settings.TrainDepotScalar;
                     break;
                 case TransportType.Subway:
-                    percent = settings.SubwayDepotPercent;
+                    scalar = settings.SubwayDepotScalar;
                     break;
                 default:
                     return 1f;
             }
 
-            if (percent <= 0)
+            if (scalar < Setting.MinScalar)
             {
-                return 1f;
+                scalar = Setting.MinScalar;
             }
-
-            float scalar = percent / 100f;
-
-            // Clamp to 1x–10x for safety.
-            if (scalar < 1f)
+            else if (scalar > Setting.MaxScalar)
             {
-                scalar = 1f;
-            }
-            else if (scalar > 10f)
-            {
-                scalar = 10f;
+                scalar = Setting.MaxScalar;
             }
 
             return scalar;
@@ -272,57 +265,67 @@ namespace AdjustTransitCapacity
         // ---- HELPERS: PASSENGER SCALAR ----
 
         /// <summary>
-        /// Passenger multipliers: 100%–1000% → 1.0–10.0.
-        /// Taxi is skipped on purpose (game keeps 4 seats).
+        /// Passenger multipliers: 1.0–10.0 (direct scalar).
+        /// Taxi is intentionally skipped (game keeps 4 seats).
         /// </summary>
         private static float GetPassengerScalar(Setting settings, TransportType type)
         {
-            int percent;
+            float scalar;
             switch (type)
             {
                 case TransportType.Bus:
-                    percent = settings.BusPassengerPercent;
+                    scalar = settings.BusPassengerScalar;
                     break;
                 case TransportType.Tram:
-                    percent = settings.TramPassengerPercent;
+                    scalar = settings.TramPassengerScalar;
                     break;
                 case TransportType.Train:
-                    percent = settings.TrainPassengerPercent;
+                    scalar = settings.TrainPassengerScalar;
                     break;
                 case TransportType.Subway:
-                    percent = settings.SubwayPassengerPercent;
+                    scalar = settings.SubwayPassengerScalar;
                     break;
                 case TransportType.Ship:
-                    percent = settings.ShipPassengerPercent;
+                    scalar = settings.ShipPassengerScalar;
                     break;
                 case TransportType.Ferry:
-                    percent = settings.FerryPassengerPercent;
+                    scalar = settings.FerryPassengerScalar;
                     break;
                 case TransportType.Airplane:
-                    percent = settings.AirplanePassengerPercent;
+                    scalar = settings.AirplanePassengerScalar;
                     break;
                 default:
                     // Includes Taxi → leave at vanilla value.
                     return 1f;
             }
 
-            if (percent <= 0)
+            if (scalar < Setting.MinScalar)
             {
-                return 1f;
+                scalar = Setting.MinScalar;
             }
-
-            float scalar = percent / 100f;
-
-            if (scalar < 1f)
+            else if (scalar > Setting.MaxScalar)
             {
-                scalar = 1f;
-            }
-            else if (scalar > 10f)
-            {
-                scalar = 10f;
+                scalar = Setting.MaxScalar;
             }
 
             return scalar;
+        }
+
+        private static bool IsHandledPassengerType(TransportType type)
+        {
+            switch (type)
+            {
+                case TransportType.Bus:
+                case TransportType.Tram:
+                case TransportType.Train:
+                case TransportType.Subway:
+                case TransportType.Ship:
+                case TransportType.Ferry:
+                case TransportType.Airplane:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }
