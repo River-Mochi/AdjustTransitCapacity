@@ -1,7 +1,8 @@
 // AdjustTransitCapacitySystem.cs
-// Applies depot and passenger capacity multipliers based on settings.
-// PrefabSystem + PrefabBase are used to read vanilla capacities so values
-// never stack and do not depend on other runtime changes.
+// Purpose: apply multipliers for depot max vehicles and passenger max riders
+//          based on current settings. PrefabSystem + PrefabBase are used to
+//          read vanilla capacities so values never stack and never depend on
+//          other runtime changes.
 
 namespace AdjustTransitCapacity
 {
@@ -12,7 +13,8 @@ namespace AdjustTransitCapacity
 
     public sealed partial class AdjustTransitCapacitySystem : GameSystemBase
     {
-        // PrefabSystem provides PrefabBase, which exposes the original prefab data.
+        // PrefabSystem provides PrefabBase, which exposes the original
+        // (vanilla) component values for each prefab.
         private PrefabSystem m_PrefabSystem = null!;
 
         // Lifecycle
@@ -83,6 +85,7 @@ namespace AdjustTransitCapacity
 
                 float scalar = GetDepotScalar(settings, depotData.m_TransportType);
 
+                // Get vanilla base from PrefabBase via PrefabSystem.
                 int baseCapacity;
                 if (!TryGetDepotBaseCapacity(entity, out baseCapacity))
                 {
@@ -122,7 +125,7 @@ namespace AdjustTransitCapacity
                 }
             }
 
-            // Passengers (vehicle seat capacity; taxi seats unchanged)
+            // Passengers (affect vehicle capacity only; taxi seats unchanged)
             foreach (var (vehicleRef, entity) in SystemAPI
                          .Query<RefRW<PublicTransportVehicleData>>()
                          .WithEntityAccess())
@@ -131,6 +134,7 @@ namespace AdjustTransitCapacity
 
                 float scalar = GetPassengerScalar(settings, vehicleData.m_TransportType);
 
+                // Get vanilla base from PrefabBase via PrefabSystem.
                 int basePassengers;
                 if (!TryGetPassengerBaseCapacity(entity, out basePassengers))
                 {
@@ -170,11 +174,11 @@ namespace AdjustTransitCapacity
                 }
             }
 
-            // Run once; Setting.Apply() or city load will enable again when needed.
+            // Run-once; either Setting.Apply() or city load will enable again.
             Enabled = false;
         }
 
-        // Prefab helpers: read vanilla values from PrefabBase
+        // Prefab helpers: read vanilla from PrefabBase
 
         private bool TryGetDepotBaseCapacity(Entity entity, out int baseCapacity)
         {
@@ -222,89 +226,88 @@ namespace AdjustTransitCapacity
             return true;
         }
 
-        // Scalar helpers
+        // Depot / passenger scalar helpers
+        // Settings store percent (100–1000); runtime scalar uses percent / 100f.
 
-        // Depot multipliers: 1.0x–10.0x. Any other depot type is left at vanilla.
         private static float GetDepotScalar(Setting settings, TransportType type)
         {
-            float scalar;
+            float percent;
 
             switch (type)
             {
                 case TransportType.Bus:
-                    scalar = settings.BusDepotScalar;
+                    percent = settings.BusDepotScalar;
                     break;
                 case TransportType.Taxi:
-                    scalar = settings.TaxiDepotScalar;
+                    percent = settings.TaxiDepotScalar;
                     break;
                 case TransportType.Tram:
-                    scalar = settings.TramDepotScalar;
+                    percent = settings.TramDepotScalar;
                     break;
                 case TransportType.Train:
-                    scalar = settings.TrainDepotScalar;
+                    percent = settings.TrainDepotScalar;
                     break;
                 case TransportType.Subway:
-                    scalar = settings.SubwayDepotScalar;
+                    percent = settings.SubwayDepotScalar;
                     break;
                 default:
                     return 1f;
             }
 
-            if (scalar < Setting.MinScalar)
+            if (percent < Setting.MinPercent)
             {
-                scalar = Setting.MinScalar;
+                percent = Setting.MinPercent;
             }
-            else if (scalar > Setting.MaxScalar)
+            else if (percent > Setting.MaxPercent)
             {
-                scalar = Setting.MaxScalar;
+                percent = Setting.MaxPercent;
             }
 
-            return scalar;
+            return percent / 100f;
         }
 
-        // Passenger multipliers: 1.0x–10.0x. Taxi seats are not changed.
         private static float GetPassengerScalar(Setting settings, TransportType type)
         {
-            float scalar;
+            float percent;
 
             switch (type)
             {
                 case TransportType.Bus:
-                    scalar = settings.BusPassengerScalar;
+                    percent = settings.BusPassengerScalar;
                     break;
                 case TransportType.Tram:
-                    scalar = settings.TramPassengerScalar;
+                    percent = settings.TramPassengerScalar;
                     break;
                 case TransportType.Train:
-                    scalar = settings.TrainPassengerScalar;
+                    percent = settings.TrainPassengerScalar;
                     break;
                 case TransportType.Subway:
-                    scalar = settings.SubwayPassengerScalar;
+                    percent = settings.SubwayPassengerScalar;
                     break;
                 case TransportType.Ship:
-                    scalar = settings.ShipPassengerScalar;
+                    percent = settings.ShipPassengerScalar;
                     break;
                 case TransportType.Ferry:
-                    scalar = settings.FerryPassengerScalar;
+                    percent = settings.FerryPassengerScalar;
                     break;
                 case TransportType.Airplane:
-                    scalar = settings.AirplanePassengerScalar;
+                    percent = settings.AirplanePassengerScalar;
                     break;
                 default:
                     // Includes Taxi → leave passenger seats at vanilla.
                     return 1f;
             }
 
-            if (scalar < Setting.MinScalar)
+            if (percent < Setting.MinPercent)
             {
-                scalar = Setting.MinScalar;
+                percent = Setting.MinPercent;
             }
-            else if (scalar > Setting.MaxScalar)
+            else if (percent > Setting.MaxPercent)
             {
-                scalar = Setting.MaxScalar;
+                percent = Setting.MaxPercent;
             }
 
-            return scalar;
+            return percent / 100f;
         }
     }
 }

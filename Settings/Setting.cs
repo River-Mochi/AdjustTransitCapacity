@@ -259,7 +259,6 @@ namespace AdjustTransitCapacity
                 {
                     return;
                 }
-
                 try
                 {
                     Application.OpenURL(UrlParadox);
@@ -282,7 +281,6 @@ namespace AdjustTransitCapacity
                 {
                     return;
                 }
-
                 try
                 {
                     Application.OpenURL(UrlDiscord);
