@@ -28,7 +28,7 @@ namespace AdjustTransitCapacity
         // Per-type seat summary (BaseSeats/NewSeats ranges), per vehicle prefab.
         private Dictionary<TransportType, SeatSummary> m_PassengerSeatSummary = null!;
 
-        // In vanilla, tram vehicles are three-section consists.
+        // In vanilla, tram vehicles are three-sections.
         private const int kTramSections = 3;
 
         private struct SeatSummary
@@ -100,7 +100,7 @@ namespace AdjustTransitCapacity
             RequireForUpdate(depotQuery);
             RequireForUpdate(vehicleQuery);
 
-            // Run only when explicitly enabled (game load or settings change).
+            // Run only when explicitly enabled (city load or settings change).
             Enabled = false;
         }
 
@@ -140,8 +140,7 @@ namespace AdjustTransitCapacity
 
         protected override void OnUpdate()
         {
-            // Extra safety: never do work outside gameplay, even if Enabled was
-            // toggled from another place.
+            // Extra safety: never do work outside gameplay
             GameManager gm = GameManager.instance;
             if (gm == null || !gm.gameMode.IsGame())
             {
@@ -173,13 +172,13 @@ namespace AdjustTransitCapacity
             {
                 ref TransportDepotData depotData = ref depotRef.ValueRW;
 
-                // Ignore depots with TransportType not supported (None, Rocket, etc.).
+                // Ignore depots with TransportType not supported (None, Rocket, PrisonVan, etc.).
                 if (!IsHandledDepotType(depotData.m_TransportType))
                 {
                     continue;
                 }
 
-                // Track which types actually exist in this city.
+                // Track which types exist in this city.
                 m_SeenDepotTypes.Add(depotData.m_TransportType);
 
                 float scalar = GetDepotScalar(settings, depotData.m_TransportType);
@@ -235,14 +234,14 @@ namespace AdjustTransitCapacity
                 // Only touch specific transport types with sliders.
                 if (!IsHandledPassengerType(vehicleData.m_TransportType))
                 {
-                    // This also leaves Taxi and any special types completely vanilla.
+                    // This leaves Taxi and any special types completely vanilla.
                     continue;
                 }
 
                 // Track which types actually exist in this city.
                 m_SeenPassengerTypes.Add(vehicleData.m_TransportType);
 
-                // Hard skip Prison Vans even though they use TransportType.Bus.
+                // Skip Prison Vans even though they use TransportType.Bus.
                 if (IsPrisonVan(entity))
                 {
                     if (debug)
@@ -310,7 +309,7 @@ namespace AdjustTransitCapacity
                 }
             }
 
-            // One-time debug summary per city of what actually changed.
+            // One-time debug summary per city of what changed.
             if (debug && !m_LoggedTypesOnce)
             {
                 m_LoggedTypesOnce = true;

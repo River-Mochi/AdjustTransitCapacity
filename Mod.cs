@@ -37,6 +37,7 @@ namespace AdjustTransitCapacity
             Setting setting = new Setting(this);
             Settings = setting;
 
+            // Register languages here
             LocalizationManager? lm = GameManager.instance?.localizationManager;
             if (lm != null)
             {
