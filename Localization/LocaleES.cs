@@ -22,7 +22,7 @@ namespace AdjustTransitCapacity
             return new Dictionary<string, string>
             {
                 // Mod Title / Tabs / Groups
-                { m_Setting.GetSettingsLocaleID(), "Adjust Transit Capacity [ATC]" },
+                { m_Setting.GetSettingsLocaleID(), "Ajustar capacidad de transporte [ATC]" },
 
                 { m_Setting.GetOptionTabLocaleID(Setting.ActionsTab), "Acciones" },
                 { m_Setting.GetOptionTabLocaleID(Setting.AboutTab),   "Acerca de" },
@@ -37,34 +37,41 @@ namespace AdjustTransitCapacity
                     "Enlaces de soporte" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup),
                     "Depuración / Registro" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.LogGroup),
+                    "Archivo de registro" },
 
                 // DEPOT labels & descriptions (1.0–10.0x)
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Cocheras de autobús" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Depósitos de autobuses" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotScalar)),
-                    "Cuántos autobuses puede mantener o sacar cada edificio de **cochera de autobús**.\n" +
-                    "Usa un multiplicador entre **1,0×** (vanilla) y **10,0×**." },
+                    "Cuántos autobuses puede mantener/generar cada edificio de **depósito de autobuses**.\n" +
+                    "Usa un multiplicador entre **1,0×** (vanilla) y **10,0×**.\n" +
+                    "Multiplica el **edificio base**, no las ampliaciones." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Cocheras de taxi" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Depósitos de taxis" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotScalar)),
-                    "Cuántos taxis puede mantener cada **cochera de taxi**." },
+                    "Cuántos taxis puede mantener cada **depósito de taxis**.\n" +
+                    "Aumenta solo el edificio base." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Cocheras de tranvía" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Depósitos de tranvías" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotScalar)),
-                    "Cuántos tranvías puede mantener cada cochera." },
+                    "Cuántos tranvías puede mantener cada **depósito de tranvías**.\n" +
+                    "Aumenta solo el edificio base." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Cocheras de tren" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Depósitos de trenes" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotScalar)),
-                    "Cuántos trenes puede mantener cada **cochera de tren**." },
+                    "Cuántos trenes puede mantener cada **depósito de trenes**.\n" +
+                    "Aumenta solo el edificio base." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "Cocheras de metro" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "Depósitos de metro" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotScalar)),
-                    "Cuántos **vehículos de metro** puede mantener cada cochera (aumenta solo el valor base)." },
+                    "Cuántos **vehículos de metro** puede mantener cada depósito.\n" +
+                    "Aumenta solo el edificio base." },
 
                 // Depot reset button
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
                     "Restablecer todos los depósitos" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
-                    "Restaura todos los multiplicadores de depósitos a **1,0×** (capacidad predeterminada del juego – vanilla)." },
+                    "Restablece todos los multiplicadores de depósitos a **1,0×** (capacidad predeterminada del juego – vanilla)." },
 
                 // Passenger labels & descriptions (1.0–10.0x)
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Pasajeros de autobús" },
@@ -86,7 +93,7 @@ namespace AdjustTransitCapacity
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerScalar)), "Pasajeros de barco" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ShipPassengerScalar)),
-                    "Cambiar solo los **barcos de pasajeros** (no los barcos de carga)." },
+                    "Cambiar solo los barcos **de pasajeros** (no los barcos de carga)." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerScalar)), "Pasajeros de ferry" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.FerryPassengerScalar)),
@@ -100,7 +107,7 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
                     "Restablecer todos los pasajeros" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
-                    "Restaura todos los multiplicadores de pasajeros a **1,0×** (capacidad predeterminada del juego – vanilla)." },
+                    "Restablece todos los multiplicadores de pasajeros a **1,0×** (capacidad predeterminada del juego – vanilla)." },
 
                 // About tab: info
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModNameDisplay)),    "Mod" },
@@ -112,20 +119,25 @@ namespace AdjustTransitCapacity
                 // About tab: links
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox Mods" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenParadoxMods)),
-                    "Abre el sitio de Paradox Mods para este mod." },
+                    "Abrir el sitio de Paradox Mods para este mod." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenDiscord)), "Discord" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenDiscord)),
-                    "Abre el Discord de la comunidad en un navegador." },
+                    "Abrir el Discord de la comunidad en el navegador." },
 
                 // About tab: debug
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Activar registro de depuración" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Activar registro de depuración detallado" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnableDebugLogging)),
-                    "Cuando está activado, se envían muchos detalles adicionales de depuración a AdjustTransitCapacity.log.\n" +
-                    "Útil para solucionar problemas, pero generará mucho registro.\n" +
+                    "Cuando está activado, se envían muchos detalles extra de depuración a AdjustTransitCapacity.log.\n" +
+                    "Útil para solucionar problemas, pero llenará el registro.\n" +
                     "Se recomienda **Desactivar** para el juego normal.\n" +
-                    "**Si no sabes para qué sirve, déjalo desactivado.**"
+                    "<Si no sabes para qué sirve, déjalo desactivado y no marques la casilla.>"
                 },
+
+                // About tab: log button
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenLogButton)), "Abrir registro" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenLogButton)),
+                    "Abrir el archivo de registro de ATC en el editor de texto predeterminado." },
             };
         }
 

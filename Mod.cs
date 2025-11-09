@@ -16,7 +16,7 @@ namespace AdjustTransitCapacity
         public const string ModName = "Adjust Transit Capacity";
         public const string ModId = "AdjustTransitCapacity";
         public const string ModTag = "[ATC]";
-        public const string ModVersion = "1.2.7";
+        public const string ModVersion = "1.2.8";
 
         private static bool s_BannerLogged;
 
@@ -33,7 +33,7 @@ namespace AdjustTransitCapacity
                 s_BannerLogged = true;
             }
 
-            var setting = new Setting(this);
+            Setting setting = new Setting(this);
             Settings = setting;
 
             var lm = GameManager.instance?.localizationManager;
@@ -43,6 +43,9 @@ namespace AdjustTransitCapacity
                 lm.AddSource("fr-FR", new LocaleFR(setting));
                 lm.AddSource("es-ES", new LocaleES(setting));
                 lm.AddSource("de-DE", new LocaleDE(setting));
+                lm.AddSource("it-IT", new LocaleIT(setting));
+                lm.AddSource("ja-JP", new LocaleJA(setting));
+                lm.AddSource("ko-KR", new LocaleKO(setting));
                 lm.AddSource("zh-HANS", new LocaleZH(setting));
             }
             else
@@ -61,7 +64,8 @@ namespace AdjustTransitCapacity
             World world = World.DefaultGameObjectInjectionWorld;
             if (world != null)
             {
-                var system = world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
+                AdjustTransitCapacitySystem system =
+                    world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
                 if (system != null)
                 {
                     system.Enabled = true;

@@ -7,31 +7,33 @@
 	<ShortDescription Value="Easy change of max capacity of all Transit Depots and Total Passengers" />
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="This is a long description" /-->
-	<LongDescription>## Adjust Transit Capacity (Redux)
+	<LongDescription>### Adjust Transit Capacity (Redux)
 
 ### Updated for 1.3.6* and Bridges DLC
 
 ### What it does
 
-- **Depot capacity**: Bus, Taxi, Tram, Train, Subway scales the maximum vehicles per depot.
-- **Passenger capacity**:  increase how many passengers each vehicle can carry (bus,tram, trains, subway, airplane, ship, ferry)
-- Options menu sliders can be adjusted without restarting (up to 10x of vanilla values).
-- Does not use Harmony or Reflection, making it more compatible with other mods and less likely to break with game updates.
+- **Depots**: change the maximum vehicles per Depot type (Bus, Taxi, Tram, Train, Subway)
+- **Passengers**:  increase how many passengers each vehicle can carry (bus, tram, trains, subway, airplane, ship, ferry)
+- **Sliders** can be adjusted without restarting (up to 10x of vanilla default values).
+- Does not use Harmony or Reflection, making it more compatible and less likely to break with game updates.
 
 ## Languages
 
 - Français French, Deutsch German, Español Spanish, 简体中文 (Simplified Chinese)
 
 ### Notes
-- Depot capacity = maximum number of vehicles a single depot can maintain or spawn.
+- Depot capacity = maximum number of vehicles a single depot can maintain or spawn (scales off base building, not extensions).
 - Passenger capacity = maximum passengers each vehicle can carry.
-- Remove other depot capacity mods to avoid conflicts (they will override each other)
-- Supports switching cities, applies changes.
+- Remove other depot/passenger capacity mods to avoid conflicts (they override each other).
+- Supports switching cities.
 
 ### Credits
 - River-Mochi - current author/maintainer
-- Many Thanks to Wayze, the author of the original Depot Capacity Changer.
+- Thanks to Wayz author of the original Depot Capacity Changer.
 - Necko1996 - testing
+- BugsyG - testing
+- StarQ for technical support
 
 
 	</LongDescription>
@@ -47,13 +49,13 @@
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/adjust-transit-capacity-redux.1866178/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.2.6" />
+	<ModVersion Value="1.2.8" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.3.6*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!-- Change log for new version. Single line or multi line. Supports minimal markdown subset -->
-	<ChangeLog>* fix: last percent method for capacity fix, and refactor split off locales</ChangeLog>
+	<ChangeLog>* Adds Korean, Japanese</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
 <ExternalLink Type="github" Url="https://github.com/River-Mochi/AdjustTransitCapacity" />

@@ -1,4 +1,4 @@
-// AdjustTransitCapacitySystem.cs
+// Systems/AdjustTransitCapacitySystem.cs
 // Purpose: apply multipliers for depot max vehicles and passenger max riders
 //          based on current settings. PrefabSystem + PrefabBase are used to
 //          read vanilla capacities so values never stack and never depend on
@@ -53,7 +53,7 @@ namespace AdjustTransitCapacity
                 return;
             }
 
-            Mod.Log.Info($"{Mod.ModTag} AdjustTransitCapacitySystem: GameLoadingComplete → reapply settings");
+            Mod.Log.Info($"{Mod.ModTag} AdjustTransitCapacitySystem: GameLoadingComplete -> reapply settings");
 
             Enabled = true;
         }
@@ -64,7 +64,6 @@ namespace AdjustTransitCapacity
         }
 
         // Main update
-
         protected override void OnUpdate()
         {
             if (Mod.Settings == null)
@@ -125,7 +124,7 @@ namespace AdjustTransitCapacity
                 }
             }
 
-            // Passengers (affect vehicle capacity only; taxi seats unchanged)
+            // Passengers (affect vehicle capacity only; taxi seats stuck at 4)
             foreach (var (vehicleRef, entity) in SystemAPI
                          .Query<RefRW<PublicTransportVehicleData>>()
                          .WithEntityAccess())
@@ -178,7 +177,7 @@ namespace AdjustTransitCapacity
             Enabled = false;
         }
 
-        // Prefab helpers: read vanilla from PrefabBase
+        // Prefab helpers: read vanilla defaults from PrefabBase
 
         private bool TryGetDepotBaseCapacity(Entity entity, out int baseCapacity)
         {
@@ -294,7 +293,7 @@ namespace AdjustTransitCapacity
                     percent = settings.AirplanePassengerScalar;
                     break;
                 default:
-                    // Includes Taxi → leave passenger seats at vanilla.
+                    // Includes Taxi -> leave passenger vanilla 4 seats.
                     return 1f;
             }
 

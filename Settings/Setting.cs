@@ -4,7 +4,10 @@
 namespace AdjustTransitCapacity
 {
     using System;
+    using System.Diagnostics;
+    using System.IO;
     using Colossal.IO.AssetDatabase;
+    using Colossal.Logging;
     using Game.Modding;
     using Game.Settings;
     using Game.UI;
@@ -24,13 +27,15 @@ namespace AdjustTransitCapacity
         PassengerGroup,
         AboutInfoGroup,
         AboutLinksGroup,
-        DebugGroup
+        DebugGroup,
+        LogGroup
     )]
     [SettingsUIShowGroupName(
         DepotGroup,
         PassengerGroup,
         AboutLinksGroup,
-        DebugGroup
+        DebugGroup,
+        LogGroup
     )]
     public sealed class Setting : ModSetting
     {
@@ -46,6 +51,7 @@ namespace AdjustTransitCapacity
         public const string AboutInfoGroup = "AboutInfo";
         public const string AboutLinksGroup = "AboutLinks";
         public const string DebugGroup = "Debug";
+        public const string LogGroup = "Log";
 
         // Slider range in percent: 100–1000 (100% = vanilla 1.0x, 1000% = 10.0x)
         public const float MinPercent = 100f;
@@ -259,6 +265,7 @@ namespace AdjustTransitCapacity
                 {
                     return;
                 }
+
                 try
                 {
                     Application.OpenURL(UrlParadox);
@@ -281,6 +288,7 @@ namespace AdjustTransitCapacity
                 {
                     return;
                 }
+
                 try
                 {
                     Application.OpenURL(UrlDiscord);
@@ -292,7 +300,7 @@ namespace AdjustTransitCapacity
             }
         }
 
-        // About tab: debug
+        // About tab: debug toggle
 
         [SettingsUISection(AboutTab, DebugGroup)]
         public bool EnableDebugLogging
@@ -300,7 +308,114 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        // Helper methods
+        // ABOUT TAB: Open Log Button
+        // Opens the log file if it exists, or the log folder if not.
+        // uses real logger path if possible, else fallback to Process.Start.
+        [SettingsUIButtonGroup(LogGroup)]
+        [SettingsUIButton]
+        [SettingsUISection(AboutTab, LogGroup)]
+        public bool OpenLogButton
+        {
+            set
+            {
+                if (!value)
+                {
+                    return;
+                }
+
+                try
+                {
+                    // 1. Prefer actual logPath from the logger if we can get it.
+                    string? logPath = null;
+
+                    if (Mod.Log is UnityLogger unityLogger &&
+                        !string.IsNullOrEmpty(unityLogger.logPath))
+                    {
+                        logPath = unityLogger.logPath;
+                    }
+                    else
+                    {
+                        // Fallback orig method path
+                        string logsDir = Path.Combine(Application.persistentDataPath, "Logs");
+                        logPath = Path.Combine(logsDir, "AdjustTransitCapacity.log");
+                    }
+
+                    // 2. Try to open the log file.
+                    if (!string.IsNullOrEmpty(logPath) && File.Exists(logPath))
+                    {
+                        OpenWithUnityFileUrl(logPath);
+                        return;
+                    }
+
+                    // 3. If no file, try to open the folder.
+                    string? folder = Path.GetDirectoryName(logPath ?? string.Empty);
+
+                    if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder))
+                    {
+                        OpenWithUnityFileUrl(folder, isDirectory: true);
+                        return;
+                    }
+
+                    Mod.Log.Info($"{Mod.ModTag} OpenLogButton: no log file yet, and log folder not found.");
+                }
+                catch (Exception ex)
+                {
+                    // Unity failed for some reason – last resort: Windows shell.
+                    try
+                    {
+                        string logsDir = Path.Combine(Application.persistentDataPath, "Logs");
+                        string logPath = Path.Combine(logsDir, "AdjustTransitCapacity.log");
+
+                        if (File.Exists(logPath))
+                        {
+                            var psi = new ProcessStartInfo(logPath)
+                            {
+                                UseShellExecute = true,
+                                ErrorDialog = false,
+                                Verb = "open"
+                            };
+
+                            Process.Start(psi);
+                        }
+                        else if (Directory.Exists(logsDir))
+                        {
+                            var psi2 = new ProcessStartInfo(logsDir)
+                            {
+                                UseShellExecute = true,
+                                ErrorDialog = false,
+                                Verb = "open"
+                            };
+
+                            Process.Start(psi2);
+                        }
+                    }
+                    catch
+                    {
+                        // Don't crash the options UI, just log the problem.
+                    }
+
+                    Mod.Log.Warn($"{Mod.ModTag} OpenLogButton failed: {ex.GetType().Name}: {ex.Message}");
+                }
+            }
+        }
+
+        // Helper: open a file or folder via Unity, using a file:/// URI.
+        private static void OpenWithUnityFileUrl(string path, bool isDirectory = false)
+        {
+            // Normalize to forward slashes for URI.
+            string normalized = path.Replace('\\', '/');
+
+            // Some platforms like a trailing slash for directories.
+            if (isDirectory && !normalized.EndsWith("/"))
+            {
+                normalized += "/";
+            }
+
+            string uri = "file:///" + normalized;
+            Application.OpenURL(uri);
+        }
+
+        // HELPERS
 
         public void ResetDepotToVanilla()
         {

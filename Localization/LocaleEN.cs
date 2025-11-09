@@ -37,28 +37,35 @@ namespace AdjustTransitCapacity
                     "Support links" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup),
                     "Debug / Logging" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.LogGroup),
+                    "Log file" },
 
                 // DEPOT labels & descriptions (1.0–10.0x)
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Bus depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotScalar)),
                     "How many buses each **Bus Depot** building can maintain/spawn.\n" +
-                    "Use a multiplier between **1.0×** (vanilla) and **10.0×**." },
+                    "Use a multiplier between **1.0×** (vanilla) and **10.0×**.\n" +
+                    "Multiplies **base building**, not extensions." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Taxi depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotScalar)),
-                    "How many taxis each **taxi depot** can maintain." },
+                    "How many taxis each **taxi depot** can maintain.\n" +
+                    "Increase to base building only." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Tram depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotScalar)),
-                    "How many trams each tram depot can maintain." },
+                    "How many trams each **tram depot** can maintain.\n" +
+                    "Increase to base building only." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Train Depots" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Train depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotScalar)),
-                    "How many trains each **train depot** can maintain." },
+                    "How many trains each **train depot** can maintain.\n" +
+                    "Increase to base building only." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "Subway Depots" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "Subway depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotScalar)),
-                    "How many **subway vehicles** each depot can maintain (increase to base only)." },
+                    "How many **subway vehicles** each depot can maintain\n" +
+                    "Increase to base building only." },
 
                 // Depot reset button
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
@@ -112,20 +119,26 @@ namespace AdjustTransitCapacity
                 // About tab: links
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox Mods" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenParadoxMods)),
-                    "Open the Paradox Mods website for this mod." },
+                    "Open Paradox Mods website for this mod." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenDiscord)), "Discord" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenDiscord)),
                     "Open the community Discord in a browser." },
 
                 // About tab: debug
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Enable debug logging" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Enable verbose debug logging" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnableDebugLogging)),
-                    "When enabled, many extra debug details are sent to AdjustTransitCapacity.log.\n" +
+                    "Enabled = send many extra debug details to AdjustTransitCapacity.log.\n" +
                     "Useful for troubleshooting, but will spam the log.\n" +
-                    "Recommend **Disable** for normal gameplay.\n" +
-                    "**If you don't know what this is for, leave it disabled.**"
+                    "**Disable** (do not check the box) for normal gameplay.\n" +
+                    "<If you do not know what this is, leave it **OFF**, and> \n" +
+                    "<do not check the box as Log spam affects performance.>"
                 },
+
+                // About tab: log button
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenLogButton)), "Open Log" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenLogButton)),
+                    "Open the ATC log file in the default text editor." },
             };
         }
 
