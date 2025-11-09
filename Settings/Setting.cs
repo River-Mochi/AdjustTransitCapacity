@@ -95,7 +95,7 @@ namespace AdjustTransitCapacity
             base.Apply();
 
             // Always save slider values, but only try to apply them
-            // when actual gameplay is running (a city is loaded).
+            // when actual gameplay is running (city is loaded).
             GameManager? gm = GameManager.instance;
             if (gm == null || !gm.gameMode.IsGame())
             {
@@ -362,7 +362,7 @@ namespace AdjustTransitCapacity
                         logPath = Path.Combine(logsDir, "AdjustTransitCapacity.log");
                     }
 
-                    // 2. Try to open the log file.
+                    // 2. Try to open the log file with Unity (works cross-platform)
                     if (!string.IsNullOrEmpty(logPath) && File.Exists(logPath))
                     {
                         OpenWithUnityFileUrl(logPath);
@@ -382,7 +382,7 @@ namespace AdjustTransitCapacity
                 }
                 catch (Exception ex)
                 {
-                    // Unity failed for some reason then  last resort: Windows shell.
+                    // Unity fails for any reason, then use Windows shell (always works).
                     try
                     {
                         string logsDir = Path.Combine(Application.persistentDataPath, "Logs");
