@@ -25,6 +25,54 @@ namespace AdjustTransitCapacity
         private HashSet<TransportType> m_SeenPassengerTypes = null!;
         private bool m_LoggedTypesOnce;
 
+        // Per-type seat summary (BaseSeats/NewSeats ranges), per vehicle prefab.
+        private Dictionary<TransportType, SeatSummary> m_PassengerSeatSummary = null!;
+
+        // In vanilla, tram vehicles are three-section consists.
+        private const int kTramSections = 3;
+
+        private struct SeatSummary
+        {
+            public bool HasData;
+            public int MinBase;
+            public int MaxBase;
+            public int MinNew;
+            public int MaxNew;
+
+            public void AddSample(int baseSeats, int newSeats)
+            {
+                if (!HasData)
+                {
+                    HasData = true;
+                    MinBase = baseSeats;
+                    MaxBase = baseSeats;
+                    MinNew = newSeats;
+                    MaxNew = newSeats;
+                    return;
+                }
+
+                if (baseSeats < MinBase)
+                {
+                    MinBase = baseSeats;
+                }
+
+                if (baseSeats > MaxBase)
+                {
+                    MaxBase = baseSeats;
+                }
+
+                if (newSeats < MinNew)
+                {
+                    MinNew = newSeats;
+                }
+
+                if (newSeats > MaxNew)
+                {
+                    MaxNew = newSeats;
+                }
+            }
+        }
+
         // ---------
         // Lifecycle
         // ---------
@@ -38,6 +86,7 @@ namespace AdjustTransitCapacity
             m_SeenDepotTypes = new HashSet<TransportType>();
             m_SeenPassengerTypes = new HashSet<TransportType>();
             m_LoggedTypesOnce = false;
+            m_PassengerSeatSummary = new Dictionary<TransportType, SeatSummary>();
 
             // Just set up queries; no heavy work here.
             EntityQuery depotQuery = SystemAPI.QueryBuilder()
@@ -72,6 +121,7 @@ namespace AdjustTransitCapacity
             m_SeenDepotTypes.Clear();
             m_SeenPassengerTypes.Clear();
             m_LoggedTypesOnce = false;
+            m_PassengerSeatSummary.Clear();
 
             Mod.Log.Info($"{Mod.ModTag} City Loading Complete -> applying ATC settings");
 
@@ -90,8 +140,8 @@ namespace AdjustTransitCapacity
 
         protected override void OnUpdate()
         {
-            // Extra safety: never do work outside gameplay, even if someone
-            // accidentally toggled Enabled from elsewhere.
+            // Extra safety: never do work outside gameplay, even if Enabled was
+            // toggled from another place.
             GameManager gm = GameManager.instance;
             if (gm == null || !gm.gameMode.IsGame())
             {
@@ -123,13 +173,13 @@ namespace AdjustTransitCapacity
             {
                 ref TransportDepotData depotData = ref depotRef.ValueRW;
 
-                // Ignore depots with TransportType we don't support (None, Rocket, etc.).
+                // Ignore depots with TransportType not supported (None, Rocket, etc.).
                 if (!IsHandledDepotType(depotData.m_TransportType))
                 {
                     continue;
                 }
 
-                // Track which types were actually present in this city.
+                // Track which types actually exist in this city.
                 m_SeenDepotTypes.Add(depotData.m_TransportType);
 
                 float scalar = GetDepotScalar(settings, depotData.m_TransportType);
@@ -182,14 +232,14 @@ namespace AdjustTransitCapacity
             {
                 ref PublicTransportVehicleData vehicleData = ref vehicleRef.ValueRW;
 
-                // Only touch specific transport types we actually expose sliders for.
+                // Only touch specific transport types with sliders.
                 if (!IsHandledPassengerType(vehicleData.m_TransportType))
                 {
-                    // This also leaves Taxi and any weird special vehicles completely vanilla.
+                    // This also leaves Taxi and any special types completely vanilla.
                     continue;
                 }
 
-                // Track which types were actually present in this city.
+                // Track which types actually exist in this city.
                 m_SeenPassengerTypes.Add(vehicleData.m_TransportType);
 
                 // Hard skip Prison Vans even though they use TransportType.Bus.
@@ -245,9 +295,22 @@ namespace AdjustTransitCapacity
 
                     vehicleData.m_PassengerCapacity = newPassengers;
                 }
+
+                // For debug summary: remember min/max values per transport type.
+                if (debug)
+                {
+                    SeatSummary summary;
+                    if (!m_PassengerSeatSummary.TryGetValue(vehicleData.m_TransportType, out summary))
+                    {
+                        summary = new SeatSummary();
+                    }
+
+                    summary.AddSample(basePassengers, newPassengers);
+                    m_PassengerSeatSummary[vehicleData.m_TransportType] = summary;
+                }
             }
 
-            // One-time debug summary per city of what we actually touched.
+            // One-time debug summary per city of what actually changed.
             if (debug && !m_LoggedTypesOnce)
             {
                 m_LoggedTypesOnce = true;
@@ -263,6 +326,50 @@ namespace AdjustTransitCapacity
                 Mod.Log.Info(
                     $"{Mod.ModTag} Debug: City Summary -> DepotTypes=[{depotSummary}] " +
                     $"PassengerTypes=[{passengerSummary}]");
+
+                // Per-type seat summary with percentage and extra context for trams.
+                if (m_PassengerSeatSummary.Count > 0)
+                {
+                    foreach (KeyValuePair<TransportType, SeatSummary> kvp in m_PassengerSeatSummary)
+                    {
+                        TransportType type = kvp.Key;
+                        SeatSummary summary = kvp.Value;
+                        if (!summary.HasData)
+                        {
+                            continue;
+                        }
+
+                        float scalar = GetPassengerScalar(settings, type);
+                        float percent = scalar * 100f;
+
+                        if (type == TransportType.Tram)
+                        {
+                            // For trams, per-section seats are shown, plus total for a 3-section consist.
+                            int perSectionBase = summary.MinBase;
+                            int perSectionNew = summary.MinNew;
+                            int totalBase = perSectionBase * kTramSections;
+                            int totalNew = perSectionNew * kTramSections;
+
+                            Mod.Log.Info(
+                                $"{Mod.ModTag} Debug: Tram passengers scaled {percent:F0}%, " +
+                                $"{perSectionBase} -> {perSectionNew} x {kTramSections} sections = {totalNew} (per vehicle prefab type)");
+                        }
+                        else if (summary.MinBase == summary.MaxBase && summary.MinNew == summary.MaxNew)
+                        {
+                            // Single seat value per prefab type.
+                            Mod.Log.Info(
+                                $"{Mod.ModTag} Debug: {type} passengers scaled {percent:F0}%, " +
+                                $"{summary.MinBase} -> {summary.MinNew} (per vehicle prefab type)");
+                        }
+                        else
+                        {
+                            // Range of seat values per prefab type (for example: Train engines vs cars).
+                            Mod.Log.Info(
+                                $"{Mod.ModTag} Debug: {type} passengers scaled {percent:F0}%, " +
+                                $"{summary.MinBase}-{summary.MaxBase} -> {summary.MinNew}-{summary.MaxNew} (per vehicle prefab types)");
+                        }
+                    }
+                }
             }
 
             // Run-once; either settings changes or city load will enable again.
@@ -305,7 +412,7 @@ namespace AdjustTransitCapacity
             }
         }
 
-        // Helper: identify PrisonVan from its prefab
+        // Helper: identify PrisonVan from its prefab.
         private bool IsPrisonVan(Entity entity)
         {
             if (m_PrefabSystem == null)

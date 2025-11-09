@@ -99,8 +99,8 @@ namespace AdjustTransitCapacity
             GameManager? gm = GameManager.instance;
             if (gm == null || !gm.gameMode.IsGame())
             {
-                // Main menu / editor: settings are saved, first use will be
-                // when a GameMode.Game city finishes loading.
+                // Main menu - settings are saved.
+                // first use when city finishes loading.
                 return;
             }
 
@@ -347,7 +347,7 @@ namespace AdjustTransitCapacity
 
                 try
                 {
-                    // 1. Prefer actual logPath from the logger if we can get it.
+                    // 1. Prefer logPath from the logger available.
                     string? logPath = null;
 
                     if (Mod.Log is UnityLogger unityLogger &&
@@ -382,7 +382,7 @@ namespace AdjustTransitCapacity
                 }
                 catch (Exception ex)
                 {
-                    // Unity failed for some reason – last resort: Windows shell.
+                    // Unity failed for some reason then  last resort: Windows shell.
                     try
                     {
                         string logsDir = Path.Combine(Application.persistentDataPath, "Logs");
@@ -413,7 +413,7 @@ namespace AdjustTransitCapacity
                     }
                     catch
                     {
-                        // Don't crash the options UI, just log the problem.
+                        // Don't crash options UI, just log problem.
                     }
 
                     Mod.Log.Warn($"{Mod.ModTag} OpenLogButton failed: {ex.GetType().Name}: {ex.Message}");
