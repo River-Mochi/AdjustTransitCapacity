@@ -1,5 +1,5 @@
 // Settings/Setting.cs
-// Options UI + saved settings for Adjust Transit Capacity.
+// Options UI + saved settings
 
 namespace AdjustTransitCapacity
 {
