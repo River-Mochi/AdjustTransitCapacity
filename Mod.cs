@@ -63,7 +63,7 @@ namespace AdjustTransitCapacity
             updateSystem.UpdateAfter<AdjustTransitCapacitySystem>(SystemUpdatePhase.PrefabUpdate);
 
             // If the mod is loaded while a city is already running, apply once.
-            // In main menu/editor, stay idle
+            // In main menu, stay idle
             // First real run in AdjustTransitCapacitySystem.OnGameLoadingComplete.
             GameManager? gm = GameManager.instance;
             if (gm != null && gm.gameMode.IsGame())
