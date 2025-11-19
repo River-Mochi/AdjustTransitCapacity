@@ -59,7 +59,11 @@ namespace AdjustTransitCapacity
                 lm.AddSource("it-IT", new LocaleIT(setting));
                 lm.AddSource("ja-JP", new LocaleJA(setting));
                 lm.AddSource("ko-KR", new LocaleKO(setting));
-                lm.AddSource("zh-HANS", new LocaleZH(setting));
+                lm.AddSource("pt-BR", new LocalePT_BR(setting));
+                lm.AddSource("zh-HANS", new LocaleZH_CN(setting));   // Simplified Chinese
+                lm.AddSource("zh-HANT", new LocaleZH_HANT(setting)); // Traditional Chinese
+
+
             }
             else
             {

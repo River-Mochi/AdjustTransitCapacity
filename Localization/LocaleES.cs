@@ -22,104 +22,106 @@ namespace AdjustTransitCapacity
             return new Dictionary<string, string>
             {
                 // Mod Title / Tabs / Groups
-                { m_Setting.GetSettingsLocaleID(), "Ajustar capacidad de transporte [ATC]" },
+                { m_Setting.GetSettingsLocaleID(), "Capacidad del transporte [ATC]" },
 
                 { m_Setting.GetOptionTabLocaleID(Setting.ActionsTab), "Acciones" },
                 { m_Setting.GetOptionTabLocaleID(Setting.AboutTab),   "Acerca de" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup),
-                    "Capacidad de depósito (vehículos máximos por depósito)" },
+                    "Capacidad de depósitos (vehículos máximos por depósito)" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup),
                     "Capacidad de pasajeros (personas máximas por vehículo)" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.AboutInfoGroup),
-                    "Información" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.AboutLinksGroup),
-                    "Enlaces de soporte" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup),
-                    "Depuración / Registro" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.LogGroup),
-                    "Archivo de registro" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutInfoGroup), "Información" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutLinksGroup), "Enlaces de soporte" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup), "Depuración / Registro" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.LogGroup), "Archivo de registro" },
 
                 // DEPOT labels & descriptions (1.0–10.0x)
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Depósitos de autobuses" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Depósitos de autobús" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotScalar)),
-                    "Cuántos autobuses puede mantener/generar cada edificio de **depósito de autobuses**.\n" +
+                    "Cuántos autobuses puede mantener/spawnear cada edificio de **Depósito de autobuses**.\n" +
                     "Usa un multiplicador entre **1,0×** (vanilla) y **10,0×**.\n" +
                     "Multiplica el **edificio base**, no las ampliaciones." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Depósitos de taxis" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Depósitos de taxi" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotScalar)),
                     "Cuántos taxis puede mantener cada **depósito de taxis**.\n" +
-                    "Aumenta solo el edificio base." },
+                    "El aumento se aplica solo al edificio base del depósito." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Depósitos de tranvías" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Depósitos de tranvía" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotScalar)),
                     "Cuántos tranvías puede mantener cada **depósito de tranvías**.\n" +
-                    "Aumenta solo el edificio base." },
+                    "El aumento se aplica solo al edificio base del depósito." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Depósitos de trenes" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Depósitos de tren" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotScalar)),
                     "Cuántos trenes puede mantener cada **depósito de trenes**.\n" +
-                    "Aumenta solo el edificio base." },
+                    "El aumento se aplica solo al edificio base del depósito." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "Depósitos de metro" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotScalar)),
-                    "Cuántos **vehículos de metro** puede mantener cada depósito.\n" +
-                    "Aumenta solo el edificio base." },
+                    "Cuántos trenes de **metro** puede mantener cada depósito.\n" +
+                    "El aumento se aplica solo al edificio base del depósito." },
 
                 // Depot reset button
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
-                    "Restablecer todos los depósitos" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)), "Restablecer todos los depósitos" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
-                    "Restablece todos los multiplicadores de depósitos a **1,0×** (capacidad predeterminada del juego – vanilla)." },
+                    "Restablece todos los depósitos a **1,0×** (capacidad predeterminada del juego - vanilla)." },
 
-                // Passenger labels & descriptions (1.0–10.0x)
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Pasajeros de autobús" },
+                // PASSENGER labels & descriptions (0.1–10.0x)
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Pasajeros autobús" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerScalar)),
-                    "Cambiar los asientos de **pasajeros de autobús**.\n" +
-                    "**1,0×** = asientos vanilla, **10,0×** = diez veces más asientos." },
+                    "Cambiar la capacidad de **pasajeros de autobús**.\n" +
+                    "**0,1×** = 10 % de los asientos vanilla (disminuir).\n" +
+                    "**1,0×** = asientos vanilla, valor por defecto.\n" +
+                    "**10,0×** = diez veces más asientos (aumentar)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerScalar)), "Pasajeros de tranvía" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerScalar)), "Pasajeros tranvía" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramPassengerScalar)),
-                    "Cambiar los asientos de **pasajeros de tranvía**." },
+                    "Cambiar el máximo de **pasajeros de tranvía**.\n" },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerScalar)), "Pasajeros de tren" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerScalar)), "Pasajeros tren" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainPassengerScalar)),
-                    "Cambiar los asientos de **pasajeros de tren**." },
+                    "Cambiar los asientos de **trenes de pasajeros** (locomotoras y vagones).\n" +
+                    "Todos los prefabs de tipo **Train** se ajustan juntos." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayPassengerScalar)), "Pasajeros de metro" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayPassengerScalar)), "Pasajeros metro" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayPassengerScalar)),
-                    "Cambiar los asientos de **pasajeros de metro**." },
+                    "Cambiar los máximos de **pasajeros de metro**." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerScalar)), "Pasajeros de barco" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerScalar)), "Pasajeros barco" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ShipPassengerScalar)),
-                    "Cambiar solo los barcos **de pasajeros** (no los barcos de carga)." },
+                    "Cambiar la capacidad de los **barcos de pasajeros** (no de carga)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerScalar)), "Pasajeros de ferry" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerScalar)), "Pasajeros ferry" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.FerryPassengerScalar)),
-                    "Cambiar los asientos de **pasajeros de ferry**." },
+                    "Cambiar el máximo de **pasajeros de ferrys**." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerScalar)), "Pasajeros de avión" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerScalar)), "Pasajeros avión" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerScalar)),
-                    "Cambiar los asientos de **pasajeros de avión**." },
+                    "Cambiar el máximo de **pasajeros de avión**." },
 
-                // Passenger reset button
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
-                    "Restablecer todos los pasajeros" },
+                // Passenger convenience + reset buttons
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DoublePassengersButton)), "Doblar" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DoublePassengersButton)),
+                    "Pone todos los multiplicadores de pasajeros en **2,0×** (200 %).\n" +
+                    "Se aplica a autobuses, tranvías, trenes, metros, barcos, ferrys y aviones." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetPassengerToVanillaButton)), "Restablecer todos los pasajeros" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
-                    "Restablece todos los multiplicadores de pasajeros a **1,0×** (capacidad predeterminada del juego – vanilla)." },
+                    "Restablece todos los multiplicadores de pasajeros a **1,0×** (capacidad predeterminada del juego - vanilla)." },
 
                 // About tab: info
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModNameDisplay)),    "Mod" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModNameDisplay)),     "Nombre mostrado de este mod." },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModNameDisplay)),     "Nombre visible de este mod." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModVersionDisplay)), "Versión" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModVersionDisplay)),  "Versión actual del mod." },
 
                 // About tab: links
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox Mods" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenParadoxMods)),
-                    "Abrir el sitio de Paradox Mods para este mod." },
+                    "Abrir la página de Paradox Mods de los mods del autor." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenDiscord)), "Discord" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenDiscord)),
@@ -128,11 +130,11 @@ namespace AdjustTransitCapacity
                 // About tab: debug
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Activar registro de depuración detallado" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnableDebugLogging)),
-                    "Cuando está activado, se envían muchos detalles extra de depuración a AdjustTransitCapacity.log.\n" +
-                    "Útil para solucionar problemas, pero llenará el registro.\n" +
-                    "Se recomienda **Desactivar** para el juego normal.\n" +
-                    "<Si no sabes para qué sirve, déjalo desactivado y no > \n" +
-                    "marques la casilla.>"
+                    "Activado = envía muchos detalles extra a AdjustTransitCapacity.log.\n" +
+                    "Útil para solucionar problemas, pero llena el registro.\n" +
+                    "**Desactivar** (no marcar) para juego normal.\n" +
+                    "<Si no sabe qué es esto, déjelo **DESACTIVADO**, y> \n" +
+                    "<no marque la casilla porque el exceso de registros afecta al rendimiento.>"
                 },
 
                 // About tab: log button

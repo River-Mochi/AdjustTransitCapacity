@@ -26,7 +26,9 @@
 
 ## Languages
 
-English (en-US), French (fr-FR), Spanish (es-ES), German (de-DE), Simplified Chinese (zh-HANS)
+- English (en-US), Français French, Deutsch German, Español Spanish, Italiano Italian
+- 한국어 Korean, 日本語 Japanese, 简体中文 (Simplified Chinese)
+- 繁體中文 Traditional Chinese, Português Brazilian Portuguese
 
 ---
 

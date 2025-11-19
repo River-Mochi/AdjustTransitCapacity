@@ -25,89 +25,91 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetSettingsLocaleID(), "ÖPNV-Kapazität anpassen [ATC]" },
 
                 { m_Setting.GetOptionTabLocaleID(Setting.ActionsTab), "Aktionen" },
-                { m_Setting.GetOptionTabLocaleID(Setting.AboutTab),   "Info"     },
+                { m_Setting.GetOptionTabLocaleID(Setting.AboutTab),   "Info" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.DepotGroup),
                     "Depotkapazität (max. Fahrzeuge pro Depot)" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup),
                     "Passagierkapazität (max. Personen pro Fahrzeug)" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.AboutInfoGroup),
-                    "Info" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.AboutLinksGroup),
-                    "Support-Links" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup),
-                    "Debug / Protokollierung" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.LogGroup),
-                    "Protokolldatei" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutInfoGroup), "Infos" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutLinksGroup), "Support-Links" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup), "Debug / Logging" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.LogGroup), "Logdatei" },
 
                 // DEPOT labels & descriptions (1.0–10.0x)
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Busdepots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusDepotScalar)),
-                    "Wie viele Busse jedes **Busdepot** warten/erzeugen kann.\n" +
+                    "Wie viele Busse jedes **Busdepot** warten / spawnen kann.\n" +
                     "Verwende einen Multiplikator zwischen **1,0×** (Vanilla) und **10,0×**.\n" +
-                    "Multipliziert das **Basisgebäude**, nicht Erweiterungen." },
+                    "Multipliziert nur das **Basisgebäude**, nicht Erweiterungen." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Taxidepots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotScalar)),
                     "Wie viele Taxis jedes **Taxidepot** warten kann.\n" +
-                    "Erhöht nur das Basisgebäude." },
+                    "Die Erhöhung gilt nur für das Basisdepot." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Straßenbahndepots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotScalar)),
                     "Wie viele Straßenbahnen jedes **Straßenbahndepot** warten kann.\n" +
-                    "Erhöht nur das Basisgebäude." },
+                    "Die Erhöhung gilt nur für das Basisdepot." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Zugdepots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotScalar)),
                     "Wie viele Züge jedes **Zugdepot** warten kann.\n" +
-                    "Erhöht nur das Basisgebäude." },
+                    "Die Erhöhung gilt nur für das Basisdepot." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "U-Bahn-Depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotScalar)),
-                    "Wie viele **U-Bahn-Fahrzeuge** jedes Depot warten kann.\n" +
-                    "Erhöht nur das Basisgebäude." },
+                    "Wie viele **U-Bahn-Züge** jedes Depot warten kann.\n" +
+                    "Die Erhöhung gilt nur für das Basisdepot." },
 
                 // Depot reset button
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
-                    "Alle Depots zurücksetzen" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)), "Alle Depots zurücksetzen" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
-                    "Setzt alle Depot-Multiplikatoren auf **1,0×** (Standardkapazität des Spiels – Vanilla) zurück." },
+                    "Setzt alle Depots auf **1,0×** zurück (Standardkapazität des Spiels - Vanilla)." },
 
-                // Passenger labels & descriptions (1.0–10.0x)
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Buspassagiere" },
+                // PASSENGER labels & descriptions (0.1–10.0x)
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Bus-Passagiere" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerScalar)),
-                    "**Bus-Passagierplätze** ändern.\n" +
-                    "**1,0×** = Vanilla-Sitzplätze, **10,0×** = zehnmal so viele Sitzplätze." },
+                    "Ändert die **Passagierkapazität von Bussen**.\n" +
+                    "**0,1×** = 10 % der Vanilla-Sitze (verringern).\n" +
+                    "**1,0×** = Vanilla-Sitze, Standardwert.\n" +
+                    "**10,0×** = zehnmal so viele Sitze (erhöhen)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerScalar)), "Straßenbahnpassagiere" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerScalar)), "Tram-Passagiere" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramPassengerScalar)),
-                    "**Straßenbahn-Passagierplätze** ändern." },
+                    "Ändert die maximale Zahl der **Straßenbahnpassagiere**.\n" },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerScalar)), "Zugpassagiere" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerScalar)), "Zug-Passagiere" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainPassengerScalar)),
-                    "**Zug-Passagierplätze** ändern." },
+                    "Ändert die **Passagiersitze in Personenzügen** (Lokomotiven und Wagen).\n" +
+                    "Alle Prefabs vom Typ **Train** werden gemeinsam angepasst." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayPassengerScalar)), "U-Bahn-Passagiere" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayPassengerScalar)),
-                    "**U-Bahn-Passagierplätze** ändern." },
+                    "Ändert die maximale Zahl der **U-Bahn-Passagiere**." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerScalar)), "Schiffspassagiere" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerScalar)), "Schiff-Passagiere" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ShipPassengerScalar)),
-                    "Nur **Passagierschiffe** ändern (keine Frachtschiffe)." },
+                    "Ändert die Kapazität von **Passagierschiffen** (nicht Frachtschiffe)." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerScalar)), "Fährpassagiere" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerScalar)), "Fähren-Passagiere" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.FerryPassengerScalar)),
-                    "**Fähr-Passagierplätze** ändern." },
+                    "Ändert die maximale Zahl der **Fährpassagiere**." },
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerScalar)), "Flugzeugpassagiere" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerScalar)), "Flugzeug-Passagiere" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerScalar)),
-                    "**Flugzeug-Passagierplätze** ändern." },
+                    "Ändert die maximale Zahl der **Flugzeugpassagiere**." },
 
-                // Passenger reset button
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
-                    "Alle Passagiere zurücksetzen" },
+                // Passenger convenience + reset buttons
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DoublePassengersButton)), "Verdoppeln" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DoublePassengersButton)),
+                    "Setzt alle Passagiermultiplikatoren auf **2,0×** (200 %).\n" +
+                    "Gilt für Busse, Straßenbahnen, Züge, U-Bahnen, Schiffe, Fähren und Flugzeuge." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetPassengerToVanillaButton)), "Alle Passagiere zurücksetzen" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
-                    "Setzt alle Passagier-Multiplikatoren auf **1,0×** (Standardkapazität des Spiels – Vanilla) zurück." },
+                    "Setzt alle Passagiermultiplikatoren auf **1,0×** zurück (Standardkapazität des Spiels - Vanilla)." },
 
                 // About tab: info
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ModNameDisplay)),    "Mod" },
@@ -117,28 +119,28 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModVersionDisplay)),  "Aktuelle Mod-Version." },
 
                 // About tab: links
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox Mods" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenParadoxMods)),
-                    "Paradox-Mods-Website für diesen Mod öffnen." },
+                    "Öffnet die Paradox-Mods-Seite der Mods des Autors." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenDiscord)), "Discord" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenDiscord)),
-                    "Die Community-Discord-Seite im Browser öffnen." },
+                    "Öffnet den Community-Discord im Browser." },
 
                 // About tab: debug
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Ausführliche Debug-Protokollierung aktivieren" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnableDebugLogging)), "Ausführliches Debug-Logging aktivieren" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnableDebugLogging)),
-                    "Wenn aktiviert, werden viele zusätzliche Debug-Details in AdjustTransitCapacity.log geschrieben.\n" +
-                    "Nützlich für Fehleranalyse, erzeugt aber viele Logeinträge.\n" +
-                    "Empfehlung: **Deaktivieren** für normales Spielen.\n" +
-                    "<Wenn du nicht weißt, wofür das ist, lass es deaktiviert und aktiviere> \n" +
-                    "<das Kontrollkästchen nicht.>"
+                    "Aktiviert = viele zusätzliche Details in AdjustTransitCapacity.log.\n" +
+                    "Nützlich zum Debuggen, erzeugt aber viel Log.\n" +
+                    "**Deaktivieren** (nicht ankreuzen) für normales Spielen.\n" +
+                    "<Wenn Sie nicht wissen, was das ist, lassen Sie es **AUS**, und> \n" +
+                    "<kreuzen Sie das Feld nicht an, da zu viel Logging die Performance beeinträchtigen kann.>"
                 },
 
                 // About tab: log button
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenLogButton)), "Protokoll öffnen" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenLogButton)), "Logdatei öffnen" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenLogButton)),
-                    "Die ATC-Protokolldatei im Standard-Texteditor öffnen." },
+                    "Öffnet die ATC-Logdatei im Standard-Texteditor." },
             };
         }
 

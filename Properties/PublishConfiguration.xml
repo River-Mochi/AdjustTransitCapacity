@@ -20,6 +20,7 @@
 
 - Français French, Deutsch German, Español Spanish, Italiano Italian
 - 한국어 Korean, 日本語 Japanese, 简体中文 (Simplified Chinese)
+- 繁體中文 Traditional Chinese, Português Brazilian
 
 ### Notes 🚍🚋🚆✈️🚢
 - Depot capacity = maximum number of vehicles a single depot can maintain or spawn (scales off base building, not extensions).
@@ -60,6 +61,8 @@ tags: city transit, control municipal, public transit system, change size, incre
 * Adds ability to reduce passenger capacities as well as increase it.
 * Allows 10% increments for passengers now versus larger 20% steps before.
 * Adds convenience button to double up all passengers.
+* Adds Traditional Chinese 繁體中文
+* Adds Português Brazilian Portuguese
 </ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />

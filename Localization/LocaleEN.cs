@@ -68,7 +68,7 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
                     "Set all depots back to **1.0×** (game's default capacity - vanilla)." },
 
-                // Passenger labels & descriptions (0.1–10.0x)
+                // PASSENGER labels & descriptions (0.1–10.0x)
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Bus Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerScalar)),
                     "Change **bus passenger** capacity.\n" +
@@ -101,7 +101,7 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerScalar)),
                     "Change **airplane passenger** maximum." },
 
-                // Passenger convenience + reset
+                // Passenger convenience + reset buttons
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DoublePassengersButton)), "Double Up" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DoublePassengersButton)),
                     "Set every passenger multiplier to **2.0×** (200%).\n" +
