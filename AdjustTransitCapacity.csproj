@@ -9,8 +9,15 @@
 		<!-- where Paradox publish metadata lives -->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
 
-		<!-- leave TargetFramework to Mod.props -->
-		<CustomManagedPath></CustomManagedPath>
+  <!-- Single source of truth for version number -->
+	  <Version>1.2.9</Version>
+	<AssemblyVersion>$(Version).0</AssemblyVersion>
+	<FileVersion>$(Version).0</FileVersion>  <!-- for file properties -->
+
+    <AssemblyName>AdjustTransitCapacity</AssemblyName>
+    <RootNamespace>AdjustTransitCapacity</RootNamespace>
+
+
 	</PropertyGroup>
 
 	<!-- CS2 toolchain -->

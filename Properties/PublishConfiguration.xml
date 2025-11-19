@@ -9,25 +9,24 @@
 	<!--LongDescription Value="This is a long description" /-->
 	<LongDescription>### Adjust Transit Capacity (Redux)
 
-### Updated for 1.3.6* and Bridges DLC
-
 ### What it does
 
 - **Depots**: change the maximum vehicles per Depot type (Bus, Taxi, Tram, Train, Subway)
 - **Passengers**:  increase how many passengers each vehicle can carry (bus, tram, trains, subway, airplane, ship, ferry)
-- **Sliders** can be adjusted without restarting (up to 10x of vanilla default values).
-- Does not use Harmony or Reflection, making it more compatible and less likely to break with game updates.
+- **Sliders** can be adjusted without restarting.
+- Supports switching cities.
 
 ## 8 Languages
 
 - Français French, Deutsch German, Español Spanish, Italiano Italian
 - 한국어 Korean, 日本語 Japanese, 简体中文 (Simplified Chinese)
 
-### Notes
+### Notes 🚍🚋🚆✈️🚢
 - Depot capacity = maximum number of vehicles a single depot can maintain or spawn (scales off base building, not extensions).
 - Passenger capacity = maximum passengers each vehicle can carry.
 - Remove other depot/passenger capacity mods to avoid conflicts (they override each other).
-- Supports switching cities.
+- Does not use Harmony or Reflection, making it more compatible and less likely to break with game updates.
+- Safe to remove any time. Use reset all button to run as vanilla game default.
 
 ### Credits
 - River-Mochi - current author/maintainer
@@ -36,6 +35,7 @@
 - BugsyG - testing
 - StarQ for technical support
 
+tags: city transit, control municipal, public transit system, change size, increase people passengers, increase depot size demand, decrease passengers
 
 	</LongDescription>
 	<!--Thumbnail-->
@@ -48,16 +48,19 @@
 	<!--Tag, can be set multiple times-->
 	<Tag Value="Code Mod" />
 	<!--Link to the forum post where the mod can be discussed-->
-	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/adjust-transit-capacity-redux.1866178/" />
+	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/adjust-transit-capacity.1866178/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.2.8" />
+	<ModVersion Value="1.2.9" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.3.6*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!-- Change log for new version. Single line or multi line. Supports minimal markdown subset -->
-	<ChangeLog>* Adds Korean, Japanese, Italian
-* Adds Open Log</ChangeLog>
+	<ChangeLog>
+* Adds ability to reduce passenger capacities as well as increase it.
+* Allows 10% increments for passengers now versus larger 20% steps before.
+* Adds convenience button to double up all passengers.
+</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
 <ExternalLink Type="github" Url="https://github.com/River-Mochi/AdjustTransitCapacity" />

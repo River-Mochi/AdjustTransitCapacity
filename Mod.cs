@@ -1,37 +1,48 @@
 // Mod.cs
-// Entrypoint for Adjust Transit Capacity; registers settings, locales, and the ECS system.
+// Entrypoint: registers settings, locales, and the ECS system.
 
 namespace AdjustTransitCapacity
 {
-    using Colossal.IO.AssetDatabase;
-    using Colossal.Localization;
-    using Colossal.Logging;
-    using Game;
-    using Game.Modding;
-    using Game.SceneFlow;
-    using Unity.Entities;
+    using System.Reflection;            // Metadata: Assembly version
+    using Colossal.IO.AssetDatabase;    // AssetDatabase.LoadSettings
+    using Colossal.Localization;        // LocalizationManager
+    using Colossal.Logging;             // ILog, defines shared s_Log
+    using Game;                         // UpdateSystem, GameManager
+    using Game.Modding;                 // IMod, ModSetting base
+    using Game.SceneFlow;               // GameMode, GameManager access
+    using Unity.Entities;               // World, ECS system registration
+
 
     /// <summary>Mod entry point: registers settings, locales, and ECS system.</summary>
     public sealed class Mod : IMod
     {
+        // ---- PUBLIC CONSTANTS / METADATA ----
         public const string ModName = "Adjust Transit Capacity";
         public const string ModId = "AdjustTransitCapacity";
         public const string ModTag = "[ATC]";
-        public const string ModVersion = "1.2.8";
+
+        /// <summary>
+        /// Read Version from .csproj (3-part).
+        /// </summary>
+        public static readonly string ModVersion =
+            Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0";
+
 
         private static bool s_BannerLogged;
 
-        public static readonly ILog Log =
-            LogManager.GetLogger(ModId).SetShowsErrorsInUI(false);
+        // ----- Logger & public properties -----
+        public static readonly ILog s_Log =
+           LogManager.GetLogger(ModId).SetShowsErrorsInUI(false);
 
         public static Setting? Settings;
 
         public void OnLoad(UpdateSystem updateSystem)
         {
-            Log.Info($"{ModName} v{ModVersion} OnLoad");
+            // metadata banner (once)
             if (!s_BannerLogged)
             {
                 s_BannerLogged = true;
+               s_Log.Info($"{ModName} v{ModVersion} OnLoad");
             }
 
             Setting setting = new Setting(this);
@@ -52,7 +63,7 @@ namespace AdjustTransitCapacity
             }
             else
             {
-                Log.Warn($"{ModTag} LocalizationManager not found; settings UI texts may be missing.");
+               s_Log.Warn($"{ModTag} LocalizationManager not found; settings UI texts may be missing.");
             }
 
             AssetDatabase.global.LoadSettings(ModId, setting, new Setting(this));
@@ -64,7 +75,7 @@ namespace AdjustTransitCapacity
 
             // If the mod is loaded while a city is already running, apply once.
             // In main menu, stay idle
-            // First real run in AdjustTransitCapacitySystem.OnGameLoadingComplete.
+            // First real run in OnGameLoadingComplete.
             GameManager? gm = GameManager.instance;
             if (gm != null && gm.gameMode.IsGame())
             {
@@ -83,7 +94,7 @@ namespace AdjustTransitCapacity
 
         public void OnDispose()
         {
-            Log.Info("OnDispose");
+           s_Log.Info("OnDispose");
 
             if (Settings != null)
             {

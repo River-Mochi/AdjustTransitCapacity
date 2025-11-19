@@ -6,15 +6,15 @@
 
 namespace AdjustTransitCapacity
 {
-    using System;
-    using System.Collections.Generic;
-    using Colossal.Serialization.Entities; // Purpose, GameMode
-    using Game;
-    using Game.Prefabs;
-    using Game.SceneFlow;
-    using Unity.Entities;
+        using System;                               // StringComparison, Math-style helpers
+        using System.Collections.Generic;           // HashSet<>, Dictionary<>
+        using Colossal.Serialization.Entities;      // Purpose, GameMode callbacks
+        using Game;                                 // GameSystemBase, GameManager
+        using Game.Prefabs;                         // PrefabSystem, PrefabBase, components
+        using Game.SceneFlow;                       // GameMode enum
+        using Unity.Entities;                       // Entity, RefRW_<>_, SystemAPI
 
-    public sealed partial class AdjustTransitCapacitySystem : GameSystemBase
+        public sealed partial class AdjustTransitCapacitySystem : GameSystemBase
     {
         // PrefabSystem provides PrefabBase, which exposes the original
         // (vanilla) component values for each prefab.
@@ -123,7 +123,7 @@ namespace AdjustTransitCapacity
             m_LoggedTypesOnce = false;
             m_PassengerSeatSummary.Clear();
 
-            Mod.Log.Info($"{Mod.ModTag} City Loading Complete -> applying ATC settings");
+            Mod.s_Log.Info($"{Mod.ModTag} City Loading Complete -> applying ATC settings");
 
             // Schedule one run for this city.
             Enabled = true;
@@ -140,7 +140,7 @@ namespace AdjustTransitCapacity
 
         protected override void OnUpdate()
         {
-            // Extra safety: never do work outside gameplay
+            // Extra safety: never do work outside gameplay.
             GameManager gm = GameManager.instance;
             if (gm == null || !gm.gameMode.IsGame())
             {
@@ -148,7 +148,7 @@ namespace AdjustTransitCapacity
                 if (debugBail)
                 {
                     GameMode mode = gm != null ? gm.gameMode : GameMode.None;
-                    Mod.Log.Info(
+                    Mod.s_Log.Info(
                         $"{Mod.ModTag} Debug: OnUpdate bail; gameMode={mode} (not Game) → disabling system.");
                 }
 
@@ -189,7 +189,7 @@ namespace AdjustTransitCapacity
                 {
                     if (debug)
                     {
-                        Mod.Log.Warn(
+                        Mod.s_Log.Warn(
                             $"{Mod.ModTag} Depot: failed to get BaseDepot from prefab " +
                             $"for entity={entity.Index}:{entity.Version}, type={depotData.m_TransportType}. " +
                             "Falling back to current depot vehicle capacity.");
@@ -213,7 +213,7 @@ namespace AdjustTransitCapacity
                 {
                     if (debug)
                     {
-                        Mod.Log.Info(
+                        Mod.s_Log.Info(
                             $"{Mod.ModTag} Depot apply: entity={entity.Index}:{entity.Version} " +
                             $"type={depotData.m_TransportType} BaseDepot={baseCapacity} scalar={scalar:F2} " +
                             $"OldDepot={depotData.m_VehicleCapacity} NewDepot={newCapacity}");
@@ -246,7 +246,7 @@ namespace AdjustTransitCapacity
                 {
                     if (debug)
                     {
-                        Mod.Log.Info(
+                        Mod.s_Log.Info(
                             $"{Mod.ModTag} Vehicle skip: entity={entity.Index}:{entity.Version} " +
                             "PrisonVan prefab detected → leaving seats vanilla.");
                     }
@@ -262,7 +262,7 @@ namespace AdjustTransitCapacity
                 {
                     if (debug)
                     {
-                        Mod.Log.Warn(
+                        Mod.s_Log.Warn(
                             $"{Mod.ModTag} Vehicle: failed to get BaseSeats from prefab " +
                             $"for entity={entity.Index}:{entity.Version}, type={vehicleData.m_TransportType}. " +
                             "Falling back to current passenger capacity.");
@@ -276,7 +276,7 @@ namespace AdjustTransitCapacity
                     basePassengers = 1;
                 }
 
-                int newPassengers = (int)(basePassengers * scalar);
+                var newPassengers = (int)(basePassengers * scalar);
                 if (newPassengers < 1)
                 {
                     newPassengers = 1;
@@ -286,7 +286,7 @@ namespace AdjustTransitCapacity
                 {
                     if (debug)
                     {
-                        Mod.Log.Info(
+                        Mod.s_Log.Info(
                             $"{Mod.ModTag} Passengers apply: entity={entity.Index}:{entity.Version} " +
                             $"type={vehicleData.m_TransportType} BaseSeats={basePassengers} scalar={scalar:F2} " +
                             $"OldSeats={vehicleData.m_PassengerCapacity} NewSeats={newPassengers}");
@@ -314,15 +314,15 @@ namespace AdjustTransitCapacity
             {
                 m_LoggedTypesOnce = true;
 
-                string depotSummary = m_SeenDepotTypes.Count > 0
+                var depotSummary = m_SeenDepotTypes.Count > 0
                     ? string.Join(", ", m_SeenDepotTypes)
                     : "(none)";
 
-                string passengerSummary = m_SeenPassengerTypes.Count > 0
+                var passengerSummary = m_SeenPassengerTypes.Count > 0
                     ? string.Join(", ", m_SeenPassengerTypes)
                     : "(none)";
 
-                Mod.Log.Info(
+                Mod.s_Log.Info(
                     $"{Mod.ModTag} Debug: City Summary -> DepotTypes=[{depotSummary}] " +
                     $"PassengerTypes=[{passengerSummary}]");
 
@@ -349,21 +349,21 @@ namespace AdjustTransitCapacity
                             int totalBase = perSectionBase * kTramSections;
                             int totalNew = perSectionNew * kTramSections;
 
-                            Mod.Log.Info(
+                            Mod.s_Log.Info(
                                 $"{Mod.ModTag} Debug: Tram passengers scaled {percent:F0}%, " +
                                 $"{perSectionBase} -> {perSectionNew} x {kTramSections} sections = {totalNew} (per vehicle prefab type)");
                         }
                         else if (summary.MinBase == summary.MaxBase && summary.MinNew == summary.MaxNew)
                         {
                             // Single seat value per prefab type.
-                            Mod.Log.Info(
+                            Mod.s_Log.Info(
                                 $"{Mod.ModTag} Debug: {type} passengers scaled {percent:F0}%, " +
                                 $"{summary.MinBase} -> {summary.MinNew} (per vehicle prefab type)");
                         }
                         else
                         {
                             // Range of seat values per prefab type (for example: Train engines vs cars).
-                            Mod.Log.Info(
+                            Mod.s_Log.Info(
                                 $"{Mod.ModTag} Debug: {type} passengers scaled {percent:F0}%, " +
                                 $"{summary.MinBase}-{summary.MaxBase} -> {summary.MinNew}-{summary.MaxNew} (per vehicle prefab types)");
                         }
@@ -514,9 +514,9 @@ namespace AdjustTransitCapacity
                     return 1f;
             }
 
-            if (percent < Setting.MinPercent)
+            if (percent < Setting.DepotMinPercent)
             {
-                percent = Setting.MinPercent;
+                percent = Setting.DepotMinPercent;
             }
             else if (percent > Setting.MaxPercent)
             {
@@ -558,9 +558,9 @@ namespace AdjustTransitCapacity
                     return 1f;
             }
 
-            if (percent < Setting.MinPercent)
+            if (percent < Setting.PassengerMinPercent)
             {
-                percent = Setting.MinPercent;
+                percent = Setting.PassengerMinPercent;
             }
             else if (percent > Setting.MaxPercent)
             {

@@ -31,14 +31,10 @@ namespace AdjustTransitCapacity
                     "Depot capacity (max vehicles per depot)" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.PassengerGroup),
                     "Passenger capacity (max people per vehicle)" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.AboutInfoGroup),
-                    "Info" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.AboutLinksGroup),
-                    "Support links" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup),
-                    "Debug / Logging" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.LogGroup),
-                    "Log file" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutInfoGroup), "Info" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.AboutLinksGroup), "Support links" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.DebugGroup), "Debug / Logging" },
+                { m_Setting.GetOptionGroupLocaleID(Setting.LogGroup), "Log file" },
 
                 // DEPOT labels & descriptions (1.0–10.0x)
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusDepotScalar)), "Bus depots" },
@@ -50,62 +46,68 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TaxiDepotScalar)), "Taxi depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TaxiDepotScalar)),
                     "How many taxis each **taxi depot** can maintain.\n" +
-                    "Increase to base building only." },
+                    "Increase applies to the base depot building only." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramDepotScalar)), "Tram depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramDepotScalar)),
                     "How many trams each **tram depot** can maintain.\n" +
-                    "Increase to base building only." },
+                    "Increase applies to the base depot building only." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainDepotScalar)), "Train depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainDepotScalar)),
                     "How many trains each **train depot** can maintain.\n" +
-                    "Increase to base building only." },
+                    "Increase applies to the base depot building only." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayDepotScalar)), "Subway depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayDepotScalar)),
-                    "How many **subway vehicles** each depot can maintain\n" +
-                    "Increase to base building only." },
+                    "How many subway vehicles each **subway depot** can maintain.\n" +
+                    "Increase applies to the base depot building only." },
 
                 // Depot reset button
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
-                    "Reset All Depots" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetDepotToVanillaButton)), "Reset All Depots" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetDepotToVanillaButton)),
-                    "Set all Depot multipliers back to **1.0×** (game's default capacity - vanilla)." },
+                    "Set all depots back to **1.0×** (game's default capacity - vanilla)." },
 
-                // Passenger labels & descriptions (1.0–10.0x)
+                // Passenger labels & descriptions (0.1–10.0x)
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.BusPassengerScalar)), "Bus Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.BusPassengerScalar)),
-                    "Change **Bus Passenger** seats.\n" +
-                    "**1.0×** = vanilla seats, **10.0×** = ten times more seats." },
+                    "Change **bus passenger** capacity.\n" +
+                    "**0.1×** = 10% of vanilla seats (decrease).\n" +
+                    "**1.0×** = vanilla seats, game default.\n" +
+                    "**10.0×** = ten times more seats (increase)." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TramPassengerScalar)), "Tram Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TramPassengerScalar)),
-                    "Change **Tram Passenger** seats." },
+                    "Change **tram passengers** maximum.\n" },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.TrainPassengerScalar)), "Train Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.TrainPassengerScalar)),
-                    "Change **Train Passenger** seats." },
+                    "Change **train passenger** seats for engines and cars.\n" +
+                    "All train prefabs of type **Train** are adjusted together." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.SubwayPassengerScalar)), "Subway Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SubwayPassengerScalar)),
-                    "Change **Subway Passenger** seats." },
+                    "Change **subway passenger** maximums" },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ShipPassengerScalar)), "Ship Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ShipPassengerScalar)),
-                    "Change **Passenger** ships only (not cargo ships)." },
+                    "Change **passenger ships** capacity (not cargo ships)." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.FerryPassengerScalar)), "Ferry Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.FerryPassengerScalar)),
-                    "Change **Ferry Passenger** seats." },
+                    "Change **ferry passenger** maximum." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.AirplanePassengerScalar)), "Airplane Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.AirplanePassengerScalar)),
-                    "Change **Airplane Passenger** seats." },
+                    "Change **airplane passenger** maximum." },
 
-                // Passenger reset button
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
-                    "Reset All Passengers" },
+                // Passenger convenience + reset
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DoublePassengersButton)), "Double Up" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DoublePassengersButton)),
+                    "Set every passenger multiplier to **2.0×** (200%).\n" +
+                    "Applies to buses, trams, trains, subways, ships, ferries, and airplanes." },
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ResetPassengerToVanillaButton)), "Reset All Passengers" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ResetPassengerToVanillaButton)),
                     "Set all passenger multipliers back to **1.0×** (game's default capacity - vanilla)." },
 
@@ -117,9 +119,9 @@ namespace AdjustTransitCapacity
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.ModVersionDisplay)),  "Current mod version." },
 
                 // About tab: links
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox Mods" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenParadoxMods)), "Paradox" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenParadoxMods)),
-                    "Open Paradox Mods website for this mod." },
+                    "Open Paradox Mods website for author's mods." },
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.OpenDiscord)), "Discord" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.OpenDiscord)),

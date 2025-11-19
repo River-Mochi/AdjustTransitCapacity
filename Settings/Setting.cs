@@ -3,41 +3,37 @@
 
 namespace AdjustTransitCapacity
 {
-    using System;
-    using System.Diagnostics;
-    using System.IO;
-    using Colossal.IO.AssetDatabase;
-    using Colossal.Logging;
-    using Game;
-    using Game.Modding;
-    using Game.SceneFlow;
-    using Game.Settings;
-    using Game.UI;
-    using Unity.Entities;
-    using UnityEngine;
 
-    /// <summary>
-    /// ATC options: depot/passenger percent sliders, about info, links, and debug toggle.
-    /// </summary>
-    [FileLocation("ModsSettings/AdjustTransitCapacity/AdjustTransitCapacity")]
+        using System;                               // Exception
+        using System.Diagnostics;                   // Process, ProcessStartInfo
+        using System.IO;                            // Path, File, Directory
+        using Colossal.IO.AssetDatabase;            // FileLocation, LoadSettings
+        using Colossal.Logging;                     // UnityLogger
+        using Game;                                 // GameManager, GameMode
+        using Game.Modding;                         // ModSetting
+        using Game.SceneFlow;                       // GameMode
+        using Game.Settings;                        // SettingsUI attributes, ModSetting APIs
+        using Game.UI;                              // Unit enum (kPercentage)
+        using Unity.Entities;                       // World, ECS system lookup
+        using UnityEngine;                          // Application.OpenURL, persistentDataPath
+
+
+        /// <summary>
+        /// ATC options: depot/passenger percent sliders, about info, links, and debug toggle.
+        /// </summary>
+        [FileLocation("ModsSettings/AdjustTransitCapacity/AdjustTransitCapacity")]  // Settings file location.
     [SettingsUITabOrder(
         ActionsTab,
         AboutTab
     )]
     [SettingsUIGroupOrder(
-        DepotGroup,
-        PassengerGroup,
-        AboutInfoGroup,
-        AboutLinksGroup,
-        DebugGroup,
-        LogGroup
+        DepotGroup, PassengerGroup,
+        AboutInfoGroup, AboutLinksGroup,
+        DebugGroup, LogGroup
     )]
     [SettingsUIShowGroupName(
-        DepotGroup,
-        PassengerGroup,
-        AboutLinksGroup,
-        DebugGroup,
-        LogGroup
+        DepotGroup, PassengerGroup,
+        AboutLinksGroup, DebugGroup, LogGroup
     )]
     public sealed class Setting : ModSetting
     {
@@ -55,10 +51,13 @@ namespace AdjustTransitCapacity
         public const string DebugGroup = "Debug";
         public const string LogGroup = "Log";
 
-        // Slider range in percent: 100–1000 (100% = vanilla 1.0x, 1000% = 10.0x)
-        public const float MinPercent = 100f;
+        // Slider ranges in percent:
+        // Depots    : 100–1000 (100% = vanilla 1.0x, 1000% = 10.0x)
+        // Passengers: 10–1000  (10% = 0.1x,    1000% = 10.0x)
+        public const float DepotMinPercent = 100f;
+        public const float PassengerMinPercent = 10f;
         public const float MaxPercent = 1000f;
-        public const float StepPercent = 20f;
+        public const float StepPercent = 10f;
 
         // External links
         private const string UrlParadox =
@@ -70,7 +69,7 @@ namespace AdjustTransitCapacity
         public Setting(IMod mod)
             : base(mod)
         {
-            // Brand-new settings file -> populate defaults.
+            // For brand-new settings file -> populate defaults.
             if (BusDepotScalar == 0f)
             {
                 SetDefaults();
@@ -100,7 +99,7 @@ namespace AdjustTransitCapacity
             if (gm == null || !gm.gameMode.IsGame())
             {
                 // Main menu - settings are saved.
-                // first use when city finishes loading.
+                // First use when city finishes loading.
                 return;
             }
 
@@ -114,7 +113,7 @@ namespace AdjustTransitCapacity
                 world.GetExistingSystemManaged<AdjustTransitCapacitySystem>();
             if (system != null)
             {
-                // Run one more tick in the CURRENT city to reapply new slider values.
+                // Run one more tick in the current city to reapply new slider values.
                 system.Enabled = true;
             }
         }
@@ -125,7 +124,7 @@ namespace AdjustTransitCapacity
 
         // Stored as percent: 100–1000. Runtime scalar = value / 100f.
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = DepotMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, DepotGroup)]
         public float BusDepotScalar
@@ -133,7 +132,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = DepotMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, DepotGroup)]
         public float TaxiDepotScalar
@@ -141,7 +140,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = DepotMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, DepotGroup)]
         public float TramDepotScalar
@@ -149,7 +148,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = DepotMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, DepotGroup)]
         public float TrainDepotScalar
@@ -157,7 +156,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = DepotMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, DepotGroup)]
         public float SubwayDepotScalar
@@ -165,6 +164,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
+        // Convenience button to reset all depots.
         [SettingsUIButtonGroup(DepotGroup)]
         [SettingsUIButton]
         [SettingsUISection(ActionsTab, DepotGroup)]
@@ -186,10 +186,10 @@ namespace AdjustTransitCapacity
         // Actions tab: passengers (max)
         // -----------------------------
 
-        // Taxi passenger capacity is not changed (CS2 keeps 4 seats).
-        // Stored as percent: 100–1000. Runtime scalar = value / 100f.
+        // Stored as percent: 10–1000. Runtime scalar = value / 100f.
+        // Taxi passengers is not changed (CS2 keeps 4 seats, more complex dispatch system).
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = PassengerMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, PassengerGroup)]
         public float BusPassengerScalar
@@ -197,7 +197,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = PassengerMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, PassengerGroup)]
         public float TramPassengerScalar
@@ -205,7 +205,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = PassengerMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, PassengerGroup)]
         public float TrainPassengerScalar
@@ -213,7 +213,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = PassengerMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, PassengerGroup)]
         public float SubwayPassengerScalar
@@ -221,9 +221,9 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        // Passenger-only types (not depots).
+        // Passenger-only types (not cargo).
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = PassengerMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, PassengerGroup)]
         public float ShipPassengerScalar
@@ -231,7 +231,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = PassengerMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, PassengerGroup)]
         public float FerryPassengerScalar
@@ -239,7 +239,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        [SettingsUISlider(min = MinPercent, max = MaxPercent, step = StepPercent,
+        [SettingsUISlider(min = PassengerMinPercent, max = MaxPercent, step = StepPercent,
             scalarMultiplier = 1, unit = Unit.kPercentage)]
         [SettingsUISection(ActionsTab, PassengerGroup)]
         public float AirplanePassengerScalar
@@ -247,6 +247,32 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
+        // Convenience button: set all passenger sliders to 200% (2.0x).
+        [SettingsUIButtonGroup(PassengerGroup)]
+        [SettingsUIButton]
+        [SettingsUISection(ActionsTab, PassengerGroup)]
+        public bool DoublePassengersButton
+        {
+            set
+            {
+                if (!value)
+                {
+                    return;
+                }
+
+                BusPassengerScalar = 200f;
+                TramPassengerScalar = 200f;
+                TrainPassengerScalar = 200f;
+                SubwayPassengerScalar = 200f;
+                ShipPassengerScalar = 200f;
+                FerryPassengerScalar = 200f;
+                AirplanePassengerScalar = 200f;
+
+                Apply();
+            }
+        }
+
+        // Convenience button: set all passenger to vanilla defaults (100%).
         [SettingsUIButtonGroup(PassengerGroup)]
         [SettingsUIButton]
         [SettingsUISection(ActionsTab, PassengerGroup)]
@@ -330,7 +356,7 @@ namespace AdjustTransitCapacity
             get; set;
         }
 
-        // About tab: Open Log Button
+        // ABOUT TAB: Open Log Button
         // Opens the log file if it exists, or the log folder if not.
 
         [SettingsUIButtonGroup(LogGroup)]
@@ -347,10 +373,10 @@ namespace AdjustTransitCapacity
 
                 try
                 {
-                    // 1. Prefer logPath from the logger available.
+                    // 1. Prefer logPath from the logger if available.
                     string? logPath = null;
 
-                    if (Mod.Log is UnityLogger unityLogger &&
+                    if (Mod.s_Log is UnityLogger unityLogger &&
                         !string.IsNullOrEmpty(unityLogger.logPath))
                     {
                         logPath = unityLogger.logPath;
@@ -358,7 +384,7 @@ namespace AdjustTransitCapacity
                     else
                     {
                         // Fallback orig method path
-                        string logsDir = Path.Combine(Application.persistentDataPath, "Logs");
+                        var logsDir = Path.Combine(Application.persistentDataPath, "Logs");
                         logPath = Path.Combine(logsDir, "AdjustTransitCapacity.log");
                     }
 
@@ -369,8 +395,8 @@ namespace AdjustTransitCapacity
                         return;
                     }
 
-                    // 3. If no file, try to open the folder.
-                    string? folder = Path.GetDirectoryName(logPath ?? string.Empty);
+                    // 3. If no file, try the folder.
+                    var folder = Path.GetDirectoryName(logPath ?? string.Empty);
 
                     if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder))
                     {
@@ -378,15 +404,15 @@ namespace AdjustTransitCapacity
                         return;
                     }
 
-                    Mod.Log.Info($"{Mod.ModTag} OpenLogButton: no log file yet, and log folder not found.");
+                    Mod.s_Log.Info($"{Mod.ModTag} OpenLogButton: no log file yet, and log folder not found.");
                 }
                 catch (Exception ex)
                 {
                     // Unity fails for any reason, then use Windows shell (always works).
                     try
                     {
-                        string logsDir = Path.Combine(Application.persistentDataPath, "Logs");
-                        string logPath = Path.Combine(logsDir, "AdjustTransitCapacity.log");
+                        var logsDir = Path.Combine(Application.persistentDataPath, "Logs");
+                        var logPath = Path.Combine(logsDir, "AdjustTransitCapacity.log");
 
                         if (File.Exists(logPath))
                         {
@@ -413,16 +439,16 @@ namespace AdjustTransitCapacity
                     }
                     catch
                     {
-                        // Don't crash options UI, just log problem.
+                        // Do not crash options UI, just log problem.
                     }
 
-                    Mod.Log.Warn($"{Mod.ModTag} OpenLogButton failed: {ex.GetType().Name}: {ex.Message}");
+                    Mod.s_Log.Warn($"{Mod.ModTag} OpenLogButton failed: {ex.GetType().Name}: {ex.Message}");
                 }
             }
         }
 
         // ----------------
-        // Helpers: logging
+        // HELPERS: logging
         // ----------------
 
         // Helper: open a file or folder via Unity, using a file:/// URI.
