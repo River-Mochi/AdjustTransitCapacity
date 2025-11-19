@@ -203,7 +203,7 @@ namespace AdjustTransitCapacity
                     baseCapacity = 1;
                 }
 
-                int newCapacity = (int)(baseCapacity * scalar);
+                var newCapacity = (int)(baseCapacity * scalar);
                 if (newCapacity < 1)
                 {
                     newCapacity = 1;
@@ -424,7 +424,7 @@ namespace AdjustTransitCapacity
                 return false;
             }
 
-            string name = prefabBase.name;
+            var name = prefabBase.name;
             if (string.IsNullOrEmpty(name))
             {
                 return false;
